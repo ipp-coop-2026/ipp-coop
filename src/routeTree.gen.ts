@@ -33,6 +33,7 @@ import { Route as P05CoordinatorRouteImport } from './routes/p05.coordinator'
 import { Route as ApiDeskActionRouteImport } from './routes/api/desk.$action'
 import { Route as ApiP02AiRouteImport } from './routes/api/p02.ai'
 import { Route as ApiP03ReviewRouteImport } from './routes/api/p03.review'
+import { Route as EmployerApplicantsIndexRouteImport } from './routes/employer.applicants.index'
 import { Route as EmployerApplicantsIdRouteImport } from './routes/employer.applicants.$id'
 import { Route as EmployerEditIdRouteImport } from './routes/employer.edit.$id'
 
@@ -156,6 +157,11 @@ const ApiP03ReviewRoute = ApiP03ReviewRouteImport.update({
   path: '/api/p03/review',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmployerApplicantsIndexRoute = EmployerApplicantsIndexRouteImport.update({
+  id: '/employer/applicants/',
+  path: '/employer/applicants/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmployerApplicantsIdRoute = EmployerApplicantsIdRouteImport.update({
   id: '/employer/applicants/$id',
   path: '/employer/applicants/$id',
@@ -194,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/api/p03/review': typeof ApiP03ReviewRoute
   '/employer/applicants/$id': typeof EmployerApplicantsIdRoute
   '/employer/edit/$id': typeof EmployerEditIdRoute
+  '/employer/applicants/': typeof EmployerApplicantsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByTo {
   '/api/p03/review': typeof ApiP03ReviewRoute
   '/employer/applicants/$id': typeof EmployerApplicantsIdRoute
   '/employer/edit/$id': typeof EmployerEditIdRoute
+  '/employer/applicants': typeof EmployerApplicantsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/api/p03/review': typeof ApiP03ReviewRoute
   '/employer/applicants/$id': typeof EmployerApplicantsIdRoute
   '/employer/edit/$id': typeof EmployerEditIdRoute
+  '/employer/applicants/': typeof EmployerApplicantsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -281,6 +290,7 @@ export interface FileRouteTypes {
     | '/api/p03/review'
     | '/employer/applicants/$id'
     | '/employer/edit/$id'
+    | '/employer/applicants/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -309,6 +319,7 @@ export interface FileRouteTypes {
     | '/api/p03/review'
     | '/employer/applicants/$id'
     | '/employer/edit/$id'
+    | '/employer/applicants'
   id:
     | '__root__'
     | '/'
@@ -337,6 +348,7 @@ export interface FileRouteTypes {
     | '/api/p03/review'
     | '/employer/applicants/$id'
     | '/employer/edit/$id'
+    | '/employer/applicants/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -366,6 +378,7 @@ export interface RootRouteChildren {
   ApiP03ReviewRoute: typeof ApiP03ReviewRoute
   EmployerApplicantsIdRoute: typeof EmployerApplicantsIdRoute
   EmployerEditIdRoute: typeof EmployerEditIdRoute
+  EmployerApplicantsIndexRoute: typeof EmployerApplicantsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -538,6 +551,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiP03ReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/employer/applicants/': {
+      id: '/employer/applicants/'
+      path: '/employer/applicants'
+      fullPath: '/employer/applicants/'
+      preLoaderRoute: typeof EmployerApplicantsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/employer/applicants/$id': {
       id: '/employer/applicants/$id'
       path: '/employer/applicants/$id'
@@ -582,6 +602,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiP03ReviewRoute: ApiP03ReviewRoute,
   EmployerApplicantsIdRoute: EmployerApplicantsIdRoute,
   EmployerEditIdRoute: EmployerEditIdRoute,
+  EmployerApplicantsIndexRoute: EmployerApplicantsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

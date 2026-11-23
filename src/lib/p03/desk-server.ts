@@ -11,11 +11,16 @@
 import { adminAction, askClaude, decide, emptyDesk, record } from "./desk-core";
 
 export const SESSION_LIMIT = 10;
-const AI_DAILY_CAP = 150;
+const AI_DAILY_CAP_DEFAULT = 150;
+/** Daily AI calls across the desk, the AI reviewer and Launchpad. Override with AI_DAILY_CAP on the host. */
+const aiDailyCap = () => Number(env("AI_DAILY_CAP")) || AI_DAILY_CAP_DEFAULT;
 const DESK_KEY = "ipp-coop:p03:desk";
 const MODELS = ["claude-haiku-5-5", "claude-haiku-4-5"];
 
 const env = (k: string): string | undefined => {
+  // Cohesivity deploys put server secrets on globalThis.__IPP_ENV (deploy/cohesivity.mjs); other hosts use process.env.
+  const injected = (globalThis as { __IPP_ENV?: Record<string, string> }).__IPP_ENV?.[k];
+  if (injected) return injected;
   try {
     return typeof process !== "undefined" ? process.env?.[k] || undefined : undefined;
   } catch {
@@ -88,7 +93,7 @@ export async function takeAiQuota(): Promise<boolean> {
   try {
     return (
       (await incr(`${DESK_KEY}:ai:${new Date().toISOString().slice(0, 10)}`, 172800)) <=
-      AI_DAILY_CAP
+      aiDailyCap()
     );
   } catch {
     return true;
@@ -132,7 +137,7 @@ export async function handleAsk(body: {
     try {
       allowed =
         (await incr(`${DESK_KEY}:ai:${new Date().toISOString().slice(0, 10)}`, 172800)) <=
-        AI_DAILY_CAP;
+        aiDailyCap();
     } catch {
       /* counter unavailable: allow */
     }

@@ -7,6 +7,17 @@ import { commit, logAi, useLaunchpad } from "@/lib/p02/store";
 
 type Turn = { who: "you" | "bot"; text: string; model?: boolean };
 
+/** Questions per browser session, as on Team 2's FAQ assistant. Keeps AI use (and cost) small. */
+export const SESSION_LIMIT = 10;
+const USED_KEY = "ipp-assistant-used";
+const readUsed = () => {
+  try {
+    return Number(window.sessionStorage.getItem(USED_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+};
+
 /**
  * Launchpad's assistants. Students: "IPP Assistant", answers only from the approved FAQ.
  * Employers: "AI assistant", limited to the employer's own listings and applicants.
@@ -17,15 +28,31 @@ export function Assistant() {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
+  const [used, setUsed] = useState(0);
+  useEffect(() => {
+    setUsed(readUsed());
+  }, []);
   const end = useRef<HTMLDivElement>(null);
   const employer = s?.view === "employer";
-  useEffect(() => setTurns([]), [employer]);
-  useEffect(() => end.current?.scrollIntoView({ block: "end" }), [turns]);
+  useEffect(() => {
+    setTurns([]);
+  }, [employer]);
+  useEffect(() => {
+    end.current?.scrollIntoView({ block: "end" });
+  }, [turns]);
   if (!s || s.view === "admin") return null;
 
   const send = async (q: string) => {
     const question = q.trim();
     if (!question || busy) return;
+    if (used >= SESSION_LIMIT) return;
+    const n = used + 1;
+    setUsed(n);
+    try {
+      window.sessionStorage.setItem(USED_KEY, String(n));
+    } catch {
+      /* ignore */
+    }
     setText("");
     setTurns((t) => [...t, { who: "you", text: question }]);
     if (question === "Talk to a human") {
@@ -133,6 +160,12 @@ export function Assistant() {
               ),
             )}
             {busy && <p className="text-xs text-muted-foreground">Thinking…</p>}
+            {used >= SESSION_LIMIT && (
+              <p className="rounded-xl bg-warn px-3 py-2 text-xs text-warn-foreground">
+                You have used your {SESSION_LIMIT} questions for this session. For anything else,
+                contact the co-op coordinator.
+              </p>
+            )}
             <div ref={end} />
           </div>
           {!employer && (
@@ -141,7 +174,7 @@ export function Assistant() {
                 <button
                   key={q}
                   type="button"
-                  disabled={busy}
+                  disabled={busy || used >= SESSION_LIMIT}
                   onClick={() => void send(q)}
                   className={`rounded-full border border-border px-2.5 py-1 text-xs hover:bg-muted disabled:opacity-50 ${focus}`}
                 >
@@ -170,12 +203,15 @@ export function Assistant() {
             <button
               type="submit"
               aria-label="Send"
-              disabled={busy || !text.trim()}
+              disabled={busy || !text.trim() || used >= SESSION_LIMIT}
               className={`rounded-lg bg-primary px-3 text-primary-foreground disabled:opacity-50 ${focus}`}
             >
               <Send className="h-4 w-4" />
             </button>
           </form>
+          <p className="px-3 pb-2 text-[11px] text-muted-foreground">
+            {Math.max(SESSION_LIMIT - used, 0)} of {SESSION_LIMIT} questions left in this session
+          </p>
         </section>
       )}
       {employer ? (

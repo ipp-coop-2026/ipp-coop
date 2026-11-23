@@ -19,15 +19,19 @@ const NAV: Record<View, NavItem[]> = {
     { to: "/profile", label: "Profile" },
     { to: "/opportunities", label: "Opportunities" },
     { to: "/applications", label: "My Applications" },
+    { to: "/desk", label: "Internship Desk" },
   ],
   employer: [
     { to: "/employer", label: "Dashboard" },
     { to: "/employer/listings", label: "My Listings" },
+    { to: "/employer/applicants", label: "Applicants" },
     { to: "/employer/post", label: "Post Opportunity" },
   ],
   admin: [
     { to: "/admin", label: "Admin Review" },
     { to: "/admin/ai-logs", label: "AI Review Log" },
+    { to: "/p03/shared", label: "Shared queue" },
+    { to: "/p05/coordinator", label: "Match checks" },
   ],
 };
 
@@ -45,7 +49,9 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
   const lp = useLaunchpad();
   const view: View = lp?.view ?? "student";
   const [menu, setMenu] = useState(false);
-  useEffect(() => setMenu(false), [path]);
+  useEffect(() => {
+    setMenu(false);
+  }, [path]);
 
   const isActive = (to: string) =>
     to === "/employer" || to === "/admin" ? path === to : path === to || path.startsWith(`${to}/`);

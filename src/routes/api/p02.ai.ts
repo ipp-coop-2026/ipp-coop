@@ -15,6 +15,7 @@ const json = (body: unknown, status = 200) =>
 
 async function callClaude(r: AiRequest, apiKey: string) {
   const { system, user } = prompts(r);
+  let last = "no model available";
   for (const model of AI_MODELS) {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -30,7 +31,10 @@ async function callClaude(r: AiRequest, apiKey: string) {
         messages: [{ role: "user", content: user }],
       }),
     });
-    if (res.status === 404 || res.status === 400) continue;
+    if (res.status === 404 || res.status === 400) {
+      last = `model ${model} unavailable (${res.status})`;
+      continue;
+    }
     if (!res.ok) throw new Error(`AI service error ${res.status}`);
     const body = (await res.json()) as { content?: { type: string; text?: string }[] };
     const text = (body.content ?? [])
@@ -39,7 +43,7 @@ async function callClaude(r: AiRequest, apiKey: string) {
       .join("");
     return parseModel(r, text, model);
   }
-  throw new Error("No model available");
+  throw new Error(last);
 }
 
 export const Route = createFileRoute("/api/p02/ai")({
@@ -56,14 +60,18 @@ export const Route = createFileRoute("/api/p02/ai")({
         }
         if (!r) return json({ error: "Unknown task." }, 400);
         const key = aiKey();
-        if (key && (await takeAiQuota())) {
-          try {
-            return json(await callClaude(r, key));
-          } catch {
-            /* fall through to the rules answer */
-          }
+        let reason = key ? "" : "no key";
+        if (key) {
+          if (await takeAiQuota()) {
+            try {
+              return json(await callClaude(r, key));
+            } catch (e) {
+              reason = e instanceof Error ? e.message : "model error";
+            }
+          } else reason = "daily AI limit reached";
         }
-        return json(fallback(r));
+        // `reason` says why the rules answer was used (shown in the AI review log detail, never secret).
+        return json({ ...fallback(r), reason });
       },
     },
   },

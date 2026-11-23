@@ -161,8 +161,14 @@ function Dashboard() {
             </ul>
           </Panel>
           <Panel className="p-0">
-            <div className="border-b border-border px-5 py-3">
+            <div className="flex items-center justify-between border-b border-border px-5 py-3">
               <h2 className="text-base font-bold">Recent applicants</h2>
+              <Link
+                to="/employer/applicants"
+                className={`text-sm font-semibold text-primary hover:underline ${focus}`}
+              >
+                View all
+              </Link>
             </div>
             <ul className="divide-y divide-border">
               {scored.length === 0 && (
@@ -174,7 +180,14 @@ function Dashboard() {
                 .map(({ a, s, l }) => (
                   <li key={a.id} className="flex items-center justify-between gap-3 px-5 py-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-heading">{s.name}</p>
+                      <Link
+                        to="/employer/applicants/$id"
+                        params={{ id: l.id }}
+                        className={`text-sm font-semibold text-heading hover:underline ${focus}`}
+                        aria-label={`${s.name}: see all applicants for ${l.title}`}
+                      >
+                        {s.name}
+                      </Link>
                       <p className="text-xs text-muted-foreground">{l.title}</p>
                     </div>
                     <div className="flex items-center gap-2">

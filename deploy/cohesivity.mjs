@@ -57,7 +57,10 @@ export default {
       const cache = url.pathname.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'public, max-age=3600';
       return new Response(binary ? b64(body) : body, { headers: { 'content-type': type, 'cache-control': cache } });
     }
-    for (const [k, v] of Object.entries(SECRETS)) globalThis.process?.env && (globalThis.process.env[k] ??= v);
+    globalThis.__IPP_ENV = SECRETS;
+    globalThis.process ??= { env: {} };
+    globalThis.process.env ??= {};
+    for (const [k, v] of Object.entries(SECRETS)) globalThis.process.env[k] = v;
     return nitro.fetch(req, { ...SECRETS, ...env, ASSETS: notFound }, ctx);
   },
 };

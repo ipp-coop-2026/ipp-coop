@@ -14,6 +14,8 @@ import { PROTECTED_IDS, SANDBOX_ID, type Decision, type WriteAction } from "./sh
 export const REVIEWER = "Sara Ahmed, Careers coordinator (P03, synthetic)";
 
 const env = (k: string): string | undefined => {
+  const injected = (globalThis as { __IPP_ENV?: Record<string, string> }).__IPP_ENV?.[k];
+  if (injected) return injected;
   try {
     return typeof process !== "undefined" ? process.env?.[k]?.trim() || undefined : undefined;
   } catch {
