@@ -60,13 +60,16 @@
   --color-panel-muted: var(--panel-muted);
   --color-lime: var(--lime);
   --color-lime-foreground: var(--lime-foreground);
-  /* Type: Figtree for text, Bricolage Grotesque for headings, IBM Plex Mono for IDs */
-  --font-sans: "Figtree", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  /* Type: Inter throughout (Team 2's prototype), IBM Plex Mono for IDs */
+  --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  /* Flat surfaces: rules and space instead of drop shadows */
-  --shadow-sm: 0 0 #0000;
-  --shadow: 0 0 #0000;
+  /* Soft card shadow, as in Team 2's prototype */
+  --shadow-sm: 0 1px 2px 0 rgb(20 48 90 / 0.04);
+  --shadow: 0 1px 3px 0 rgb(20 48 90 / 0.06), 0 1px 2px -1px rgb(20 48 90 / 0.04);
+  --color-heading: var(--heading);
+  --color-chip: var(--chip);
+  --color-chip-foreground: var(--chip-foreground);
   /* P03 desk outcome colours */
   --color-warn: var(--warn);
   --color-warn-foreground: var(--warn-foreground);
@@ -85,61 +88,65 @@
 }
 
 /*
- * Unified look for the IPP app (professor's Sprint 3 request: "make your app look unified").
- * Palette: paper #F5F7EE, forest ink #213502, deep teal #1F4F59, cyan #54C0CC, olive #7EA00E, lime #DCD964.
- * Status colours are few and always paired with a word: green = done or approved, yellow = one thing to do,
- * cyan = sent to someone, gray = not now. A muted red is kept only for urgent desk cases and destructive actions.
- * Hex equivalents are noted after each value.
+ * Common look: Team 2's "Launchpad" prototype (launch-path-ipp.base44.app), agreed by the teams on 23 Nov 2026
+ * as the UI base for the merged app. Rebuilt from the live site's own tokens: Inter, navy headings #14305A,
+ * teal primary #108C8E, background #F5F8FA, white cards, radius 0.75rem.
+ * Status colours are few and always paired with a word: green = done or approved, amber = one thing to do,
+ * blue = sent on or submitted, red = rejected, urgent or destructive. Hex equivalents follow each value.
  */
 :root {
-  --radius: 1rem;
-  --background: oklch(0.972 0.012 116.8); /* #F5F7EE paper */
-  --foreground: oklch(0.301 0.078 129.4); /* #213502 forest ink */
-  --card: oklch(0.992 0.007 115.7); /* #FCFDF8 */
-  --card-foreground: oklch(0.301 0.078 129.4);
-  --popover: oklch(0.992 0.007 115.7);
-  --popover-foreground: oklch(0.301 0.078 129.4);
-  --primary: oklch(0.399 0.054 213.5); /* #1F4F59 deep teal */
-  --primary-foreground: oklch(0.963 0.020 118.9); /* #F1F5E6 */
-  --secondary: oklch(0.934 0.017 121.8); /* #E7EBDF */
-  --secondary-foreground: oklch(0.301 0.078 129.4);
-  --muted: oklch(0.952 0.017 117.3); /* #EEF1E4 */
-  --muted-foreground: oklch(0.507 0.040 129.4); /* #5E6A52 */
-  --accent: oklch(0.933 0.069 107.7); /* #EDEDB8 soft lime */
-  --accent-foreground: oklch(0.301 0.078 129.4);
-  --banner: oklch(0.343 0.046 213.2); /* #183F47 */
-  --banner-foreground: oklch(0.963 0.020 118.9);
-  --status: oklch(0.927 0.047 119.0); /* #E3ECC9 green, done */
-  --status-foreground: oklch(0.445 0.117 130.3); /* #3D6006 */
-  --warn: oklch(0.948 0.060 101.3); /* #F6F0C2 yellow, one thing to do */
-  --warn-foreground: oklch(0.439 0.092 100.5); /* #5E5300 */
-  --sent: oklch(0.944 0.021 204.0); /* #DDF1F3 cyan, sent on */
-  --sent-foreground: oklch(0.399 0.054 213.5);
-  --danger: oklch(0.926 0.024 44.3); /* #F5E2DA muted, urgent only */
-  --danger-foreground: oklch(0.454 0.115 37.9); /* #8A3B22 */
-  --destructive: oklch(0.517 0.138 35.6); /* #A8442A */
-  --destructive-foreground: oklch(0.992 0.007 115.7);
-  --border: oklch(0.912 0.025 121.9); /* #DFE5D3 */
-  --input: oklch(0.838 0.035 123.3); /* #C5CEB5 */
-  --ring: oklch(0.399 0.054 213.5);
-  --chart-1: oklch(0.399 0.054 213.5); /* #1F4F59 */
-  --chart-2: oklch(0.750 0.100 205.3); /* #54C0CC */
-  --chart-3: oklch(0.656 0.159 123.6); /* #7EA00E */
-  --chart-4: oklch(0.865 0.139 107.6); /* #DCD964 */
-  --chart-5: oklch(0.445 0.054 129.9); /* #4A5A3A */
-  --panel: oklch(0.399 0.054 213.5); /* #1F4F59 teal panel */
-  --panel-foreground: oklch(0.963 0.020 118.9);
-  --panel-muted: oklch(0.839 0.027 193.7); /* #B7D0CF */
-  --lime: oklch(0.865 0.139 107.6); /* #DCD964 */
-  --lime-foreground: oklch(0.301 0.078 129.4);
-  --sidebar: oklch(0.992 0.007 115.7);
-  --sidebar-foreground: oklch(0.301 0.078 129.4);
-  --sidebar-primary: oklch(0.399 0.054 213.5);
-  --sidebar-primary-foreground: oklch(0.963 0.020 118.9);
-  --sidebar-accent: oklch(0.933 0.069 107.7);
-  --sidebar-accent-foreground: oklch(0.301 0.078 129.4);
-  --sidebar-border: oklch(0.912 0.025 121.9);
-  --sidebar-ring: oklch(0.399 0.054 213.5);
+  --radius: 0.75rem;
+  --background: oklch(0.977 0.004 238.4); /* #F5F8FA */
+  --foreground: oklch(0.275 0.037 260.0); /* #1D283A body text */
+  --heading: oklch(0.312 0.083 258.5); /* #14305A navy headings */
+  --card: oklch(1 0 0); /* #FFFFFF */
+  --card-foreground: oklch(0.275 0.037 260.0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.275 0.037 260.0);
+  --primary: oklch(0.582 0.096 196.8); /* #108C8E teal */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.954 0.008 238.5); /* #EBF0F4 */
+  --secondary-foreground: oklch(0.312 0.083 258.5);
+  --muted: oklch(0.961 0.006 238.5); /* #EEF3F6 */
+  --muted-foreground: oklch(0.550 0.023 264.4); /* #6B7280 */
+  --accent: oklch(0.964 0.014 198.1); /* #E9F6F6 pale teal, active nav */
+  --accent-foreground: oklch(0.480 0.085 196.8); /* #0B6E70 */
+  --chip: oklch(0.971 0.007 247.9); /* #F2F6FA skill chips */
+  --chip-foreground: oklch(0.451 0.047 248.9); /* #41586F */
+  --banner: oklch(0.312 0.083 258.5); /* #14305A */
+  --banner-foreground: oklch(1 0 0);
+  --status: oklch(0.959 0.021 156.8); /* #E7F6EC green, done or approved */
+  --status-foreground: oklch(0.516 0.120 152.9); /* #1E7B45 */
+  --warn: oklch(0.975 0.025 86.9); /* #FEF6E4 amber, one thing to do */
+  --warn-foreground: oklch(0.508 0.108 73.3); /* #8A5A00 */
+  --sent: oklch(0.952 0.017 256.3); /* #E8F0FB blue, submitted or sent on */
+  --sent-foreground: oklch(0.436 0.135 259.7); /* #1F4E9A */
+  --danger: oklch(0.957 0.018 17.5); /* #FDECEC red, rejected or urgent */
+  --danger-foreground: oklch(0.500 0.182 29.5); /* #B42318 */
+  --destructive: oklch(0.500 0.182 29.5); /* #B42318 */
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.921 0.010 247.9); /* #E0E6EB */
+  --input: oklch(0.889 0.014 248.0); /* #D3DBE3 */
+  --ring: oklch(0.582 0.096 196.8);
+  --chart-1: oklch(0.582 0.096 196.8);
+  --chart-2: oklch(0.312 0.083 258.5);
+  --chart-3: oklch(0.516 0.120 152.9);
+  --chart-4: oklch(0.508 0.108 73.3);
+  --chart-5: oklch(0.550 0.023 264.4);
+  --panel: oklch(0.312 0.083 258.5); /* #14305A navy panel (Internship Desk) */
+  --panel-foreground: oklch(1 0 0);
+  --panel-muted: oklch(0.825 0.031 256.0); /* #B9C7DA */
+  /* "lime" was the highlight in the previous look; kept as a token so existing pages keep working. */
+  --lime: oklch(0.964 0.014 198.1); /* #E9F6F6 */
+  --lime-foreground: oklch(0.480 0.085 196.8); /* #0B6E70 */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.275 0.037 260.0);
+  --sidebar-primary: oklch(0.582 0.096 196.8);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.964 0.014 198.1);
+  --sidebar-accent-foreground: oklch(0.480 0.085 196.8);
+  --sidebar-border: oklch(0.921 0.010 247.9);
+  --sidebar-ring: oklch(0.582 0.096 196.8);
 }
 
 .dark {
@@ -208,10 +215,12 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    color: var(--color-heading);
+    letter-spacing: -0.015em;
   }
 
   h1 {
+    font-weight: 800;
     letter-spacing: -0.02em;
   }
 }

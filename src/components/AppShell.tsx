@@ -1,188 +1,237 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Briefcase, Building2, GraduationCap, ClipboardCheck, ExternalLink, HelpCircle, ListChecks, Menu, MessagesSquare, Sparkles } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { GraduationCap, Menu, RotateCcw, X } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 import { resetDemo } from "@/lib/ipp-store";
-import { ChatWidget } from "@/components/ChatWidget";
+import { resetStudent } from "@/lib/p02/student-store";
 
-const NAV = [
-  { to: "/student", label: "Student", icon: GraduationCap },
-  { to: "/employer", label: "Employer HR", icon: Briefcase },
-  { to: "/admin", label: "University Administrator", icon: Building2 },
-  { to: "/faculty", label: "Faculty Reviewer", icon: ClipboardCheck },
-  { to: "/desk", label: "Internship Desk", icon: MessagesSquare },
-] as const;
+/*
+ * App frame copied from Team 2's Launchpad prototype (agreed UI base, 23 Nov 2026): a white header with the
+ * brand, Profile / Opportunities / My Applications (plus Admin Review in admin view), a "View as" Student |
+ * Admin switch, then the page, then the footer. Other teams' pages (/matches, /desk, /admin, /employer,
+ * /faculty, /p05/coordinator, /faq) still work by URL; they get a place in this header once the teams agree how.
+ */
 
-// Team pages inside this app (src/routes/p0X.*).
-const TEAM = [
-  { to: "/p05/coordinator", label: "P05 Coordinator", note: "Check match results, Team 5", icon: ListChecks },
-] as const;
+type NavItem = { to: string; label: string };
+export type Mode = "student" | "admin";
 
-// Team modules not yet ported into this app (docs/ARCHITECTURE.md, "escape hatch"): open in a new tab.
-const EXTERNAL = [
-  {
-    href: "https://thecyper.github.io/bus2010-p05-opportunity-matcher/",
-    label: "P05 Prototype",
-    note: "Sprint 2 version, Team 5",
-    icon: Sparkles,
-  },
-] as const;
+const STUDENT_NAV: NavItem[] = [
+  { to: "/profile", label: "Profile" },
+  { to: "/opportunities", label: "Opportunities" },
+  { to: "/applications", label: "My Applications" },
+];
+const ADMIN_NAV: NavItem[] = [...STUDENT_NAV, { to: "/admin/applications", label: "Admin Review" }];
 
-export function AppShell({ children }: { children: ReactNode }) {
-  const path = useRouterState({ select: (s) => s.location.pathname });
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef<HTMLElement>(null);
-  const rolesButtonRef = useRef<HTMLButtonElement>(null);
+const MODE_KEY = "ipp-view-as";
 
-  // Phone-width Roles menu: move focus in, trap Tab, close on Esc, restore focus to the Roles button.
+/** Admin pages switch to admin view, student pages to student view; shared pages keep the last view. */
+export function modeForPath(path: string, last: Mode = "student"): Mode {
+  if (path.startsWith("/admin") || path.startsWith("/p05")) return "admin";
+  if (["/profile", "/opportunities", "/applications", "/matches"].some((p) => path.startsWith(p)))
+    return "student";
+  return last;
+}
+
+function useMode(path: string): Mode {
+  const [last, setLast] = useState<Mode>("student");
   useEffect(() => {
-    if (!open) return;
-    const menu = menuRef.current;
-    const focusables = () => Array.from(menu?.querySelectorAll<HTMLElement>("a[href], button") ?? []);
-    focusables()[0]?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { e.preventDefault(); setOpen(false); return; }
-      if (e.key !== "Tab") return;
-      const items = focusables();
-      const first = items[0], last = items[items.length - 1];
-      if (!first || !last) return;
-      if (e.shiftKey && (document.activeElement === first || !menu?.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && (document.activeElement === last || !menu?.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => { document.removeEventListener("keydown", onKey); rolesButtonRef.current?.focus({ preventScroll: true }); };
-  }, [open]);
+    try {
+      if (window.localStorage.getItem(MODE_KEY) === "admin") setLast("admin");
+    } catch {
+      /* storage blocked */
+    }
+  }, []);
+  const mode = modeForPath(path, last);
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(MODE_KEY, mode);
+    } catch {
+      /* ignore */
+    }
+  }, [mode]);
+  return mode;
+}
 
+const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
+export function AppShell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const mode = useMode(path);
+  const nav = mode === "admin" ? ADMIN_NAV : STUDENT_NAV;
+  const [menu, setMenu] = useState(false);
+  useEffect(() => setMenu(false), [path]);
+
+  const isActive = (to: string) =>
+    to === "/admin" ? path === "/admin" : path === to || path.startsWith(`${to}/`);
   const onReset = () => {
-    if (window.confirm("Reset demo? All synthetic records in this browser will be replaced with the original seed data.")) {
+    if (
+      window.confirm(
+        "Reset demo data? Records in this browser go back to the original synthetic seed.",
+      )
+    ) {
       resetDemo();
+      resetStudent();
     }
   };
 
-  return (
-    <div className="flex min-h-screen w-full flex-col bg-background">
-      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 bg-banner px-4 py-2 text-center text-sm text-banner-foreground">
-        <span>Demo workspace · Role switching is simulated. Synthetic data is saved only in this browser.</span>
-        <button onClick={onReset} className="font-semibold underline underline-offset-2">
-          Reset demo
-        </button>
-      </div>
-      <div className="flex flex-1">
-        <aside
-          id="roles-menu"
-          ref={menuRef}
-          aria-label="Roles"
-          {...(open ? { role: "dialog", "aria-modal": true } : {})}
-          className={`${open ? "block" : "hidden"} fixed inset-y-0 left-0 z-20 w-64 border-r border-border bg-card p-4 md:static md:block`}
+  const toggle = (
+    <div
+      role="group"
+      aria-label="View as"
+      className="flex rounded-full border border-border bg-muted p-0.5"
+    >
+      {(
+        [
+          ["student", "Student", "/opportunities"],
+          ["admin", "Admin", "/admin/applications"],
+        ] as const
+      ).map(([m, label, to]) => (
+        <Link
+          key={m}
+          to={to}
+          aria-pressed={mode === m}
+          className={`rounded-full px-3.5 py-1 text-xs font-semibold transition-colors ${focus} ${
+            mode === m
+              ? "bg-card text-heading shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
         >
-          <div className="mb-7 flex items-center gap-3 px-2">
+          {label}
+        </Link>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-card focus:px-3 focus:py-2"
+      >
+        Skip to content
+      </a>
+      <header className="sticky top-0 z-30 border-b border-border bg-card/90 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 md:px-6">
+          <Link to="/" className={`flex shrink-0 items-center gap-2.5 rounded-lg ${focus}`}>
             <span
               aria-hidden="true"
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-lime font-display text-sm font-bold text-lime-foreground"
+              className="grid h-9 w-9 place-items-center rounded-lg bg-heading text-white"
             >
-              IPP
+              <GraduationCap className="h-5 w-5" />
             </span>
-            <div>
-              <div className="font-display text-lg font-bold leading-tight text-foreground">Internship Practicum</div>
-              <div className="text-xs text-muted-foreground">BUS 2010 co-op platform</div>
-            </div>
+            <span className="leading-tight">
+              <span className="block text-sm font-bold text-heading">IPP</span>
+              <span className="block text-xs text-muted-foreground">
+                Co-op Internship Practicum
+              </span>
+            </span>
+          </Link>
+
+          <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
+            {nav.map((n) => (
+              <Link
+                key={n.to}
+                to={n.to}
+                aria-current={isActive(n.to) ? "page" : undefined}
+                className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${focus} ${
+                  isActive(n.to)
+                    ? "bg-accent text-accent-foreground"
+                    : "text-foreground hover:bg-muted"
+                }`}
+              >
+                {n.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="ml-auto hidden items-center gap-3 md:flex">
+            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              View as
+            </span>
+            {toggle}
           </div>
-          <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Role (simulated)
-          </p>
-          <nav className="flex flex-col gap-1">
-            {NAV.map((n) => {
-              const active = path === n.to;
-              return (
+
+          <button
+            type="button"
+            className={`ml-auto rounded-lg border border-border p-2 md:hidden ${focus}`}
+            aria-expanded={menu}
+            aria-controls="mobile-menu"
+            onClick={() => setMenu((m) => !m)}
+          >
+            {menu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            <span className="sr-only">Menu</span>
+          </button>
+        </div>
+
+        {menu && (
+          <div
+            id="mobile-menu"
+            className="max-h-[75vh] overflow-y-auto border-t border-border bg-card px-4 py-3 md:hidden"
+          >
+            <div className="mb-3 flex items-center gap-3">
+              <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                View as
+              </span>
+              {toggle}
+            </div>
+            <nav aria-label="Main" className="mb-3 flex flex-col">
+              {nav.map((n) => (
                 <Link
                   key={n.to}
                   to={n.to}
-                  onClick={() => setOpen(false)}
-                  className={`flex items-center gap-3 rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
-                    active ? "bg-lime font-semibold text-lime-foreground" : "text-foreground hover:bg-muted"
-                  }`}
+                  className={`rounded-lg px-2 py-2 text-sm font-medium ${focus} ${isActive(n.to) ? "bg-accent text-accent-foreground" : "hover:bg-muted"}`}
                 >
-                  <n.icon className="h-4 w-4" />
                   {n.label}
                 </Link>
-              );
-            })}
-          </nav>
-          <p className="mb-2 mt-6 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Team modules
-          </p>
-          <nav aria-label="Team modules" className="flex flex-col gap-1">
-            {TEAM.map((t) => (
-              <Link
-                key={t.to}
-                to={t.to}
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  path === t.to ? "bg-lime font-semibold text-lime-foreground" : "text-foreground hover:bg-muted"
-                }`}
-              >
-                <t.icon className="h-4 w-4" aria-hidden="true" />
-                <span className="flex min-w-0 flex-col">
-                  <span>{t.label}</span>
-                  <span className={`text-xs font-normal ${path === t.to ? "text-lime-foreground/80" : "text-muted-foreground"}`}>{t.note}</span>
-                </span>
-              </Link>
-            ))}
-            {EXTERNAL.map((x) => (
-              <a
-                key={x.href}
-                href={x.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-              >
-                <x.icon className="h-4 w-4" aria-hidden="true" />
-                <span className="flex min-w-0 flex-col">
-                  <span>{x.label}</span>
-                  <span className="text-xs font-normal text-muted-foreground">{x.note}</span>
-                </span>
-                <ExternalLink className="ml-auto h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
-                <span className="sr-only">(opens in a new tab)</span>
-              </a>
-            ))}
-          </nav>
-          <p className="mb-2 mt-6 px-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Help</p>
-          <Link
-            to="/faq"
-            onClick={() => setOpen(false)}
-            className={`flex items-center gap-3 rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
-              path === "/faq" ? "bg-lime font-semibold text-lime-foreground" : "text-foreground hover:bg-muted"
-            }`}
-          >
-            <HelpCircle className="h-4 w-4" />
-            FAQ &amp; chatbot
-          </Link>
-          <p className="mt-8 px-2 text-xs text-muted-foreground">
-            Records are stored in this browser's local storage and are not shared across devices.
-          </p>
-        </aside>
-        {open && <div className="fixed inset-0 z-10 bg-foreground/30 md:hidden" onClick={() => setOpen(false)} />}
-        <main className="min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-24">
+              ))}
+            </nav>
+          </div>
+        )}
+      </header>
+
+      <main
+        id="main"
+        className={`mx-auto w-full flex-1 px-4 pb-24 pt-8 md:px-6 md:pt-10 ${wide ? "max-w-6xl" : "max-w-5xl"}`}
+      >
+        {children}
+      </main>
+
+      <footer className="border-t border-border bg-card">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm md:px-6">
+          <div>
+            <p className="font-medium text-heading">IPP | Sprint 3 | All groups</p>
+            <p className="text-xs text-muted-foreground">
+              Co-op Internship Practicum Platform · University demo prototype
+            </p>
+          </div>
           <button
-            ref={rolesButtonRef}
-            aria-expanded={open}
-            aria-controls="roles-menu"
-            className="mb-4 inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm md:hidden"
-            onClick={() => setOpen(true)}
+            type="button"
+            onClick={onReset}
+            className={`inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground ${focus}`}
           >
-            <Menu className="h-4 w-4" /> Roles
+            <RotateCcw aria-hidden="true" className="h-3.5 w-3.5" /> Reset demo data
           </button>
-          {children}
-        </main>
-      </div>
-      <ChatWidget />
+        </div>
+      </footer>
     </div>
   );
 }
 
-export function PageHeader({ title, subtitle }: { title: string; subtitle: string }) {
+/** Page title in Team 2's style: a small step label, a navy title and one plain sentence. */
+export function PageHeader({
+  title,
+  subtitle,
+  step,
+}: {
+  title: string;
+  subtitle: string;
+  step?: string;
+}) {
   return (
-    <div className="mb-6">
-      <h1 className="font-display text-3xl font-bold tracking-tight text-foreground md:text-4xl">{title}</h1>
+    <div className="mb-8">
+      {step && (
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary">{step}</p>
+      )}
+      <h1 className="text-3xl font-extrabold tracking-tight text-heading md:text-4xl">{title}</h1>
       <p className="mt-2 max-w-3xl text-base text-muted-foreground">{subtitle}</p>
     </div>
   );
@@ -190,17 +239,41 @@ export function PageHeader({ title, subtitle }: { title: string; subtitle: strin
 
 export function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="rounded-3xl border border-border bg-card p-6">
-      <h2 className="mb-3 font-display text-lg font-bold text-foreground">{title}</h2>
+    <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <h2 className="mb-3 text-lg font-bold text-heading">{title}</h2>
       <div className="text-sm text-card-foreground">{children}</div>
     </section>
   );
 }
 
-export function Status({ children }: { children: ReactNode }) {
+type Tone = "green" | "amber" | "blue" | "red" | "gray";
+const TONES: Record<Tone, string> = {
+  green: "bg-status text-status-foreground",
+  amber: "bg-warn text-warn-foreground",
+  blue: "bg-sent text-sent-foreground",
+  red: "bg-danger text-danger-foreground",
+  gray: "bg-muted text-muted-foreground",
+};
+
+/** Picks the colour from the word, so every page uses the same colour for the same state. */
+export function toneFor(text: string): Tone {
+  const t = text.toLowerCase();
+  if (/(reject|declin|urgent|not eligible)/.test(t)) return "red";
+  if (/(closed|withdrawn|not placed|not now|draft|shortlist)/.test(t)) return "gray";
+  if (/(approved|published|open|answered|accepted|can apply|resolved|placed|eligible)/.test(t))
+    return "green";
+  if (/(submitted|sent|career services|resubmitted)/.test(t)) return "blue";
+  if (/(pending|waiting|change|shortlist|ready|review|one thing|interview)/.test(t)) return "amber";
+  return "green";
+}
+
+export function Status({ children, tone }: { children: ReactNode; tone?: Tone }) {
+  const t = tone ?? (typeof children === "string" ? toneFor(children) : "green");
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-status px-2.5 py-0.5 text-xs font-medium text-status-foreground">
-      <span className="h-1.5 w-1.5 rounded-full bg-status-foreground" />
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${TONES[t]}`}
+    >
+      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-current" />
       {children}
     </span>
   );
@@ -211,5 +284,9 @@ export function Grid({ children }: { children: ReactNode }) {
 }
 
 export function Placeholder({ children }: { children: ReactNode }) {
-  return <p className="rounded-lg border border-dashed border-border p-3 text-muted-foreground">{children}</p>;
+  return (
+    <p className="rounded-lg border border-dashed border-border p-3 text-muted-foreground">
+      {children}
+    </p>
+  );
 }

@@ -11,14 +11,20 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ApplicationsRouteImport } from './routes/applications'
 import { Route as DeskRouteImport } from './routes/desk'
 import { Route as EmployerRouteImport } from './routes/employer'
 import { Route as FacultyRouteImport } from './routes/faculty'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as MatchesRouteImport } from './routes/matches'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as StudentRouteImport } from './routes/student'
+import { Route as AdminApplicationsRouteImport } from './routes/admin_.applications'
 import { Route as AdminSharedRouteImport } from './routes/admin_.shared'
 import { Route as ApiAiReviewRouteImport } from './routes/api/ai-review'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
+import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
 import { Route as P05CoordinatorRouteImport } from './routes/p05.coordinator'
 import { Route as ApiDeskActionRouteImport } from './routes/api/desk.$action'
 import { Route as ApiP03ReviewRouteImport } from './routes/api/p03.review'
@@ -31,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApplicationsRoute = ApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeskRoute = DeskRouteImport.update({
@@ -53,9 +64,24 @@ const FaqRoute = FaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchesRoute = MatchesRouteImport.update({
+  id: '/matches',
+  path: '/matches',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
   path: '/student',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/admin_/applications',
+  path: '/admin/applications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSharedRoute = AdminSharedRouteImport.update({
@@ -71,6 +97,16 @@ const ApiAiReviewRoute = ApiAiReviewRouteImport.update({
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
+  id: '/opportunities/',
+  path: '/opportunities/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
+  id: '/opportunities/$id',
+  path: '/opportunities/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const P05CoordinatorRoute = P05CoordinatorRouteImport.update({
@@ -92,30 +128,42 @@ const ApiP03ReviewRoute = ApiP03ReviewRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/applications': typeof ApplicationsRoute
   '/desk': typeof DeskRoute
   '/employer': typeof EmployerRoute
   '/faculty': typeof FacultyRoute
   '/faq': typeof FaqRoute
+  '/matches': typeof MatchesRoute
+  '/profile': typeof ProfileRoute
   '/student': typeof StudentRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/shared': typeof AdminSharedRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
+  '/opportunities/$id': typeof OpportunitiesIdRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
   '/api/p03/review': typeof ApiP03ReviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/applications': typeof ApplicationsRoute
   '/desk': typeof DeskRoute
   '/employer': typeof EmployerRoute
   '/faculty': typeof FacultyRoute
   '/faq': typeof FaqRoute
+  '/matches': typeof MatchesRoute
+  '/profile': typeof ProfileRoute
   '/student': typeof StudentRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/shared': typeof AdminSharedRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
+  '/opportunities/$id': typeof OpportunitiesIdRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
+  '/opportunities': typeof OpportunitiesIndexRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
   '/api/p03/review': typeof ApiP03ReviewRoute
 }
@@ -123,15 +171,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/applications': typeof ApplicationsRoute
   '/desk': typeof DeskRoute
   '/employer': typeof EmployerRoute
   '/faculty': typeof FacultyRoute
   '/faq': typeof FaqRoute
+  '/matches': typeof MatchesRoute
+  '/profile': typeof ProfileRoute
   '/student': typeof StudentRoute
+  '/admin_/applications': typeof AdminApplicationsRoute
   '/admin_/shared': typeof AdminSharedRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
+  '/opportunities/$id': typeof OpportunitiesIdRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
+  '/opportunities/': typeof OpportunitiesIndexRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
   '/api/p03/review': typeof ApiP03ReviewRoute
 }
@@ -140,45 +194,63 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/applications'
     | '/desk'
     | '/employer'
     | '/faculty'
     | '/faq'
+    | '/matches'
+    | '/profile'
     | '/student'
+    | '/admin/applications'
     | '/admin/shared'
     | '/api/ai-review'
     | '/api/chat'
+    | '/opportunities/$id'
     | '/p05/coordinator'
+    | '/opportunities/'
     | '/api/desk/$action'
     | '/api/p03/review'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
+    | '/applications'
     | '/desk'
     | '/employer'
     | '/faculty'
     | '/faq'
+    | '/matches'
+    | '/profile'
     | '/student'
+    | '/admin/applications'
     | '/admin/shared'
     | '/api/ai-review'
     | '/api/chat'
+    | '/opportunities/$id'
     | '/p05/coordinator'
+    | '/opportunities'
     | '/api/desk/$action'
     | '/api/p03/review'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/applications'
     | '/desk'
     | '/employer'
     | '/faculty'
     | '/faq'
+    | '/matches'
+    | '/profile'
     | '/student'
+    | '/admin_/applications'
     | '/admin_/shared'
     | '/api/ai-review'
     | '/api/chat'
+    | '/opportunities/$id'
     | '/p05/coordinator'
+    | '/opportunities/'
     | '/api/desk/$action'
     | '/api/p03/review'
   fileRoutesById: FileRoutesById
@@ -186,15 +258,21 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  ApplicationsRoute: typeof ApplicationsRoute
   DeskRoute: typeof DeskRoute
   EmployerRoute: typeof EmployerRoute
   FacultyRoute: typeof FacultyRoute
   FaqRoute: typeof FaqRoute
+  MatchesRoute: typeof MatchesRoute
+  ProfileRoute: typeof ProfileRoute
   StudentRoute: typeof StudentRoute
+  AdminApplicationsRoute: typeof AdminApplicationsRoute
   AdminSharedRoute: typeof AdminSharedRoute
   ApiAiReviewRoute: typeof ApiAiReviewRoute
   ApiChatRoute: typeof ApiChatRoute
+  OpportunitiesIdRoute: typeof OpportunitiesIdRoute
   P05CoordinatorRoute: typeof P05CoordinatorRoute
+  OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   ApiDeskActionRoute: typeof ApiDeskActionRoute
   ApiP03ReviewRoute: typeof ApiP03ReviewRoute
 }
@@ -213,6 +291,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/applications': {
+      id: '/applications'
+      path: '/applications'
+      fullPath: '/applications'
+      preLoaderRoute: typeof ApplicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/desk': {
@@ -243,11 +328,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/matches': {
+      id: '/matches'
+      path: '/matches'
+      fullPath: '/matches'
+      preLoaderRoute: typeof MatchesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/student': {
       id: '/student'
       path: '/student'
       fullPath: '/student'
       preLoaderRoute: typeof StudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin_/applications': {
+      id: '/admin_/applications'
+      path: '/admin/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/shared': {
@@ -269,6 +375,20 @@ declare module '@tanstack/react-router' {
       path: '/api/chat'
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/': {
+      id: '/opportunities/'
+      path: '/opportunities'
+      fullPath: '/opportunities/'
+      preLoaderRoute: typeof OpportunitiesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities/$id': {
+      id: '/opportunities/$id'
+      path: '/opportunities/$id'
+      fullPath: '/opportunities/$id'
+      preLoaderRoute: typeof OpportunitiesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/p05/coordinator': {
@@ -298,15 +418,21 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  ApplicationsRoute: ApplicationsRoute,
   DeskRoute: DeskRoute,
   EmployerRoute: EmployerRoute,
   FacultyRoute: FacultyRoute,
   FaqRoute: FaqRoute,
+  MatchesRoute: MatchesRoute,
+  ProfileRoute: ProfileRoute,
   StudentRoute: StudentRoute,
+  AdminApplicationsRoute: AdminApplicationsRoute,
   AdminSharedRoute: AdminSharedRoute,
   ApiAiReviewRoute: ApiAiReviewRoute,
   ApiChatRoute: ApiChatRoute,
+  OpportunitiesIdRoute: OpportunitiesIdRoute,
   P05CoordinatorRoute: P05CoordinatorRoute,
+  OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   ApiDeskActionRoute: ApiDeskActionRoute,
   ApiP03ReviewRoute: ApiP03ReviewRoute,
 }
