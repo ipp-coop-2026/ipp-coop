@@ -36,6 +36,15 @@ const NAV: Record<View, NavItem[]> = {
   ],
 };
 
+// Earlier team pages, kept reachable from the footer without changing Group 2's menus.
+const TEAM_PAGES = [
+  { to: "/faq", label: "Approved FAQ (Team 1)" },
+  { to: "/student", label: "Student record (Team 1)" },
+  { to: "/faculty", label: "Faculty view (Team 1)" },
+  { to: "/matches", label: "Matches (Team 5)" },
+  { to: "/p03", label: "Review and publication (Team 3)" },
+] as const;
+
 const VIEWS: { id: View; label: string; home: string }[] = [
   { id: "student", label: "Student", home: "/opportunities" },
   { id: "employer", label: "Employer", home: "/employer" },
@@ -197,6 +206,17 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
               Interface and employer side by{" "}
               <span className="font-medium text-heading">Group 2 (P02, Employer)</span>, with parts
               from Teams 1, 3 and 5.
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              More from the teams:{" "}
+              {TEAM_PAGES.map((t, i) => (
+                <span key={t.to}>
+                  {i > 0 && " · "}
+                  <Link to={t.to} className={`hover:text-foreground hover:underline ${focus}`}>
+                    {t.label}
+                  </Link>
+                </span>
+              ))}
             </p>
           </div>
           <button

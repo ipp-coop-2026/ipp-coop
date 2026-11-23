@@ -13,6 +13,7 @@ import {
   Panel,
   RoleGate,
 } from "@/components/p02/ui";
+import { P05Panel } from "@/components/p05/P05Panel";
 import { DEMO_PROFILES } from "@/lib/p02/data";
 import { canRecommend, recommend, type Match } from "@/lib/p02/match";
 import { commit, logAi, openListings, studentById, useLaunchpad } from "@/lib/p02/store";
@@ -258,6 +259,8 @@ function Opportunities() {
             </>
           )}
         </section>
+
+        <P05Panel />
 
         <Panel className="mb-6 p-4">
           <div className="grid gap-3 md:grid-cols-[1fr_10rem_10rem_10rem]">

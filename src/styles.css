@@ -219,6 +219,11 @@
     letter-spacing: -0.015em;
   }
 
+  /* Headings on the navy panel (Internship Desk, P05 cards) take the panel's light text. */
+  .bg-panel :is(h1, h2, h3) {
+    color: inherit;
+  }
+
   h1 {
     font-weight: 800;
     letter-spacing: -0.02em;
