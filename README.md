@@ -142,7 +142,16 @@ Built by the BUS 2010 (Fall 2026) class teams at MBZUAI.
 | --- | --- |
 | **Group 2 (P02, Employer)** | **Launchpad**, the interface and base of this app: the student, employer and admin views and their AI features (assistant, recommendations, employer AI tools, AI review log). Original prototype: launch-path-ipp.base44.app |
 | **Team 3 (P03, University review and publication)** | **The shared platform**: GitHub organisation and this repository, CI, protected `main`, CODEOWNERS and team access, architecture and workflow docs; **Launchpad rebuilt in code** from Group 2's live prototype (Base44 cannot export code); the live preview with server-side AI and a daily cap; Group 2's requested changes (Applicants tab, dashboard links, P02 credit). **P03 module**: review checklist, AI reviewer, request changes and versioned resubmits, decision log, Internship Desk, shared-database review queue |
-| **Team 5 (P05)** | Shared Supabase database, read-only client, matching engine and match checks (five merged pull requests) |
+| **Team 5 (P05)** | Shared Supabase database, read-only client, matching engine, match coordinator page, and the first unified look for the Sprint 3 request (five merged pull requests) |
 | **Team 1 (P01)** | The first common app, student profiles and the FAQ chatbot |
 
-Repository maintained by Team 3 ([@11NOel11](https://github.com/11NOel11), merge lead). Policy answers in the Internship Desk come from the MBZUAI 2025–2026 Industry Internship Guide.
+### Contributors
+
+| GitHub | Team | Work in this repository |
+| --- | --- | --- |
+| [@11NOel11](https://github.com/11NOel11) | Team 3 (P03) | Maintainer and merge lead: repository, CI and rules, Launchpad rebuild, P03 module, live preview |
+| [@TheCYPER](https://github.com/TheCYPER) | Team 5 (P05) | Unified look (#2), shared-database client (#4), matching engine and recommendations (#6), match coordinator page (#7) |
+| [@GravityCodez](https://github.com/GravityCodez) | Team 1 (P01) | The Team 1 app snapshot this repository started from |
+| Group 2 (P02) | Employer | Designed and built the Launchpad prototype on Base44 that this app's interface follows |
+
+Thanks also to every team's Scrum of Scrums liaison for the cross-team decisions recorded in [docs/decisions.md](docs/decisions.md). Policy answers in the Internship Desk come from the MBZUAI 2025–2026 Industry Internship Guide.
