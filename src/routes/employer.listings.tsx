@@ -3,7 +3,8 @@ import { CalendarDays, Lock, Pencil, Plus, Trash2, Users } from "lucide-react";
 import { AppShell, Status } from "@/components/AppShell";
 import { CompanySwitch } from "@/components/p02/CompanySwitch";
 import { focus, fmtDate, Panel, primaryBtn, RoleGate } from "@/components/p02/ui";
-import { commit, deleteListing, setListingStatus, useLaunchpad } from "@/lib/p02/store";
+import { closeListing, commit, deleteListing, latestReview, useLaunchpad } from "@/lib/p02/store";
+import { COMPANIES } from "@/lib/p02/data";
 
 export const Route = createFileRoute("/employer/listings")({
   head: () => ({ meta: [{ title: "My listings · IPP" }] }),
@@ -35,6 +36,55 @@ function MyListings() {
           </Link>
         </div>
         <CompanySwitch />
+        {lp && mine.some((l) => l.status === "Changes Requested" || l.status === "Rejected") && (
+          <Panel className="mb-4 border-warn-foreground/25 bg-warn/60">
+            <h2 className="text-base font-bold text-heading">Feedback from the university</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              The co-op coordinator reviewed these listings against five checks. Fix what is asked
+              and resubmit; students see a listing only after approval.
+            </p>
+            <ul className="mt-3 space-y-2">
+              {mine
+                .filter((l) => l.status === "Changes Requested" || l.status === "Rejected")
+                .map((l) => {
+                  const r = latestReview(lp, l.id);
+                  return (
+                    <li
+                      key={l.id}
+                      className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-border bg-card p-3 text-sm"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-semibold text-heading">
+                          {l.title}{" "}
+                          <span className="font-normal text-muted-foreground">
+                            · version {l.version ?? 1}
+                          </span>
+                        </p>
+                        {r && (
+                          <p className="mt-1">
+                            <span className="font-medium">
+                              {l.status === "Rejected" ? "Not published" : "Changes requested"}
+                              :{" "}
+                            </span>
+                            {r.reason}
+                          </p>
+                        )}
+                      </div>
+                      {l.status === "Changes Requested" && (
+                        <Link
+                          to="/employer/edit/$id"
+                          params={{ id: l.id }}
+                          className={`shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground ${focus}`}
+                        >
+                          Fix and resubmit
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+            </ul>
+          </Panel>
+        )}
         <Panel className="overflow-x-auto p-0">
           <table className="w-full min-w-[760px] text-sm">
             <thead>
@@ -113,7 +163,15 @@ function MyListings() {
                           type="button"
                           className={small}
                           disabled={l.status === "Closed"}
-                          onClick={() => commit((s) => setListingStatus(s, l.id, "Closed"))}
+                          onClick={() =>
+                            commit((s) =>
+                              closeListing(
+                                s,
+                                l.id,
+                                COMPANIES.find((c) => c.id === l.companyId)?.hr ?? "Employer",
+                              ),
+                            )
+                          }
                           aria-label={`Close ${l.title}`}
                         >
                           <Lock aria-hidden="true" className="h-3.5 w-3.5" /> Close

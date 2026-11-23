@@ -5,7 +5,8 @@
 
 export type WorkMode = "On-site" | "Hybrid" | "Remote";
 export type PlacementType = "Co-op" | "Internship";
-export type ListingStatus = "Pending Review" | "Approved" | "Rejected" | "Closed";
+export type ListingStatus =
+  "Pending Review" | "Changes Requested" | "Approved" | "Rejected" | "Closed";
 export type AppStatus = "Submitted" | "Shortlisted" | "Approved" | "Not placed" | "Rejected";
 
 export interface Company {
@@ -31,6 +32,22 @@ export interface Listing {
   requirements: string[];
   status: ListingStatus;
   createdAt: string;
+  /** Team 3 (P03): every submission and resubmission is a version; earlier versions are kept. */
+  version?: number;
+  history?: ListingSnapshot[];
+}
+
+/** The fields an employer submits, kept per version for the P03 change comparison. */
+export interface ListingSnapshot {
+  version: number;
+  title: string;
+  city: string;
+  mode: WorkMode;
+  duration: string;
+  deadline: string;
+  required: string[];
+  description: string;
+  submittedAt: string;
 }
 
 export interface Student {

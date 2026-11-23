@@ -41,6 +41,28 @@ export interface Profile {
   bio: string;
 }
 
+/** Team 3 (P03) listing review decision, kept in the decision log. IDs follow the shared database (REV-0001). */
+export interface ListingReview {
+  id: string;
+  listingId: string;
+  version: number;
+  decision: "Approved" | "Changes Requested" | "Declined" | "Resubmitted" | "Closed";
+  reason: string;
+  checks: string[];
+  aiAssisted: boolean;
+  by: string;
+  at: string;
+}
+
+export interface ReviewRule {
+  id: string;
+  text: string;
+  at: string;
+}
+
+export const REVIEWER = "Sara Ahmed, Careers coordinator";
+export const P03_CHECKS = ["completeness", "supervision", "timing", "tasks", "learning"] as const;
+
 export interface LaunchpadState {
   view: View;
   companyId: string;
@@ -49,6 +71,8 @@ export interface LaunchpadState {
   listings: Listing[];
   applications: Application[];
   aiLog: AiLogEntry[];
+  reviews: ListingReview[];
+  rules: ReviewRule[];
 }
 
 export const EMPTY_PROFILE: Profile = {
@@ -74,9 +98,28 @@ export const seed = (): LaunchpadState => ({
   listings: LISTINGS,
   applications: APPLICATIONS,
   aiLog: [],
+  reviews: [],
+  rules: [],
 });
 
 // ---------- Pure helpers (tested) ----------
+
+/**
+ * The view a page belongs to, from its address. The address is the source of truth: Back, links and
+ * typed URLs switch the view instead of showing an "… only" notice. Shared pages return null.
+ */
+export function viewForPath(path: string): View | null {
+  if (path === "/p03/employer" || path.startsWith("/employer")) return "employer";
+  if (path.startsWith("/admin") || path.startsWith("/p03") || path.startsWith("/p05"))
+    return "admin";
+  if (
+    ["/profile", "/opportunities", "/applications", "/matches", "/student"].some(
+      (p) => path === p || path.startsWith(`${p}/`),
+    )
+  )
+    return "student";
+  return null;
+}
 
 export function meAsStudent(p: Profile | null): Student | null {
   if (!p) return null;
@@ -207,15 +250,153 @@ export function postListing(s: LaunchpadState, f: ListingInput, now = new Date()
   return { ...s, listings: [listing, ...s.listings] };
 }
 
-export function updateListing(s: LaunchpadState, id: string, f: ListingInput): LaunchpadState {
+const snapshot = (l: Listing, now: string) => ({
+  version: l.version ?? 1,
+  title: l.title,
+  city: l.city,
+  mode: l.mode,
+  duration: l.duration,
+  deadline: l.deadline,
+  required: l.required,
+  description: l.description,
+  submittedAt: now,
+});
+
+export function updateListing(
+  s: LaunchpadState,
+  id: string,
+  f: ListingInput,
+  now = new Date(),
+): LaunchpadState {
   const e = validateListing(f);
   if (Object.keys(e).length) throw new Error(Object.values(e)[0]);
-  // An edited listing goes back to the admin before students see the change.
+  const old = s.listings.find((l) => l.id === id);
+  if (!old) throw new Error("That listing was not found.");
+  // Team 3 (P03): an edit is a new version that goes back to the admin; earlier versions are kept for comparison.
+  const t = now.toISOString();
+  const history = old.history?.length ? old.history : [snapshot(old, old.createdAt)];
+  const version = (old.version ?? 1) + 1;
+  const next: Listing = { ...old, ...f, status: "Pending Review", version };
+  const reviews =
+    old.status === "Changes Requested"
+      ? [
+          ...s.reviews,
+          {
+            id: nextReview(s.reviews),
+            listingId: id,
+            version,
+            decision: "Resubmitted" as const,
+            reason: "The employer edited the listing and sent it back.",
+            checks: [],
+            aiAssisted: false,
+            by: "Employer",
+            at: t,
+          },
+        ]
+      : s.reviews;
   return {
     ...s,
-    listings: s.listings.map((l) => (l.id === id ? { ...l, ...f, status: "Pending Review" } : l)),
+    reviews,
+    listings: s.listings.map((l) =>
+      l.id === id ? { ...next, history: [...history, snapshot(next, t)] } : l,
+    ),
   };
 }
+
+function nextReview(rs: ListingReview[]): string {
+  const max = rs.reduce((m, r) => Math.max(m, Number(/^REV-(\d{4})$/.exec(r.id)?.[1] ?? 0)), 0);
+  return `REV-${String(max + 1).padStart(4, "0")}`;
+}
+
+/**
+ * Listing decision. Approve and Reject are Group 2's one-click actions; Team 3 adds Request changes (needs a
+ * reason the employer can act on) and an optional five-check checklist. Every decision goes to the decision log.
+ */
+export function reviewListing(
+  s: LaunchpadState,
+  id: string,
+  decision: "Approved" | "Changes Requested" | "Declined",
+  opts: { reason?: string; checks?: string[]; aiAssisted?: boolean; now?: Date } = {},
+): LaunchpadState {
+  const l = s.listings.find((x) => x.id === id);
+  if (!l) throw new Error("That listing was not found.");
+  if (l.status !== "Pending Review")
+    throw new Error(`${l.title} is ${l.status}, not waiting for review.`);
+  const checks = opts.checks ?? [];
+  const reason = (opts.reason ?? "").replace(/\s+/g, " ").trim();
+  // Group 2's Approve and Reject stay one click (their agreed flow). Team 3's checklist is optional and recorded.
+  if (decision === "Changes Requested" && reason.length < 5)
+    throw new Error("Enter a reason the employer can act on.");
+  const ticked = P03_CHECKS.filter((c) => checks.includes(c)).length;
+  const status: Listing["status"] =
+    decision === "Approved"
+      ? "Approved"
+      : decision === "Declined"
+        ? "Rejected"
+        : "Changes Requested";
+  const review: ListingReview = {
+    id: nextReview(s.reviews),
+    listingId: id,
+    version: l.version ?? 1,
+    decision,
+    reason:
+      decision === "Approved"
+        ? `${ticked === P03_CHECKS.length ? "All five checks passed." : ticked ? `Approved with ${ticked} of 5 checks ticked.` : "Approved."}${reason ? ` ${reason}` : ""}`
+        : decision === "Declined"
+          ? reason || "Rejected by the co-op coordinator."
+          : reason,
+    checks,
+    aiAssisted: !!opts.aiAssisted,
+    by: REVIEWER,
+    at: (opts.now ?? new Date()).toISOString(),
+  };
+  return { ...setListingStatus(s, id, status), reviews: [...s.reviews, review] };
+}
+
+export function closeListing(
+  s: LaunchpadState,
+  id: string,
+  by: string,
+  now = new Date(),
+): LaunchpadState {
+  const l = s.listings.find((x) => x.id === id);
+  if (!l) throw new Error("That listing was not found.");
+  const review: ListingReview = {
+    id: nextReview(s.reviews),
+    listingId: id,
+    version: l.version ?? 1,
+    decision: "Closed",
+    reason: "Listing closed; students no longer see it.",
+    checks: [],
+    aiAssisted: false,
+    by,
+    at: now.toISOString(),
+  };
+  return { ...setListingStatus(s, id, "Closed"), reviews: [...s.reviews, review] };
+}
+
+export const latestReview = (s: LaunchpadState, listingId: string) =>
+  [...s.reviews].reverse().find((r) => r.listingId === listingId && r.decision !== "Resubmitted");
+
+export function addRule(s: LaunchpadState, text: string, now = new Date()): LaunchpadState {
+  const t = text.replace(/\s+/g, " ").trim();
+  if (t.length < 8) throw new Error("Write the rule as a full sentence.");
+  if (t.length > 300) throw new Error("Keep a rule under 300 characters.");
+  if (s.rules.length >= 25) throw new Error("The demo keeps at most 25 rules. Remove one first.");
+  const max = s.rules.reduce((m, r) => Math.max(m, Number(/(\d+)$/.exec(r.id)?.[1] ?? 0)), 0);
+  return {
+    ...s,
+    rules: [
+      ...s.rules,
+      { id: `RULE-${String(max + 1).padStart(3, "0")}`, text: t, at: now.toISOString() },
+    ],
+  };
+}
+
+export const removeRule = (s: LaunchpadState, id: string): LaunchpadState => ({
+  ...s,
+  rules: s.rules.filter((r) => r.id !== id),
+});
 
 export function logAi(
   s: LaunchpadState,

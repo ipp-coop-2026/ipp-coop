@@ -3,7 +3,7 @@ import { GraduationCap, Menu, RotateCcw, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { resetDemo } from "@/lib/ipp-store";
 import { Assistant } from "@/components/p02/Assistant";
-import { commit, resetLaunchpad, useLaunchpad, type View } from "@/lib/p02/store";
+import { commit, resetLaunchpad, useLaunchpad, viewForPath, type View } from "@/lib/p02/store";
 
 /*
  * App frame copied from Team 2's Launchpad (agreed UI base, 23 Nov 2026): brand, the current view's pages,
@@ -30,6 +30,7 @@ const NAV: Record<View, NavItem[]> = {
   admin: [
     { to: "/admin", label: "Admin Review" },
     { to: "/admin/ai-logs", label: "AI Review Log" },
+    { to: "/admin/desk", label: "Desk queue" },
     { to: "/p03/shared", label: "Shared queue" },
     { to: "/p05/coordinator", label: "Match checks" },
   ],
@@ -47,7 +48,12 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const lp = useLaunchpad();
-  const view: View = lp?.view ?? "student";
+  const fromPath = viewForPath(path);
+  const view: View = fromPath ?? lp?.view ?? "student";
+  // Keep the stored view in step with the page, so shared pages remember the last view used.
+  useEffect(() => {
+    if (lp && fromPath && lp.view !== fromPath) commit((s) => ({ ...s, view: fromPath }));
+  }, [lp, fromPath]);
   const [menu, setMenu] = useState(false);
   useEffect(() => {
     setMenu(false);
@@ -99,7 +105,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
         Skip to content
       </a>
       <header className="sticky top-0 z-30 border-b border-border bg-card/90 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 md:px-6">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 md:px-6">
           <Link to="/" className={`flex shrink-0 items-center gap-2.5 rounded-lg ${focus}`}>
             <span
               aria-hidden="true"
@@ -121,7 +127,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
                 key={n.to}
                 to={n.to}
                 aria-current={isActive(n.to) ? "page" : undefined}
-                className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${focus} ${isActive(n.to) ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-muted"}`}
+                className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm font-medium transition-colors ${focus} ${isActive(n.to) ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-muted"}`}
               >
                 {n.label}
               </Link>
@@ -129,7 +135,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
           </nav>
 
           <div className="ml-auto hidden items-center gap-3 md:flex">
-            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="hidden whitespace-nowrap text-xs font-medium uppercase tracking-wider text-muted-foreground lg:inline">
               View as
             </span>
             {toggle}

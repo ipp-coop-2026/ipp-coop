@@ -119,3 +119,55 @@ describe("AI tasks", () => {
     ).toBeGreaterThan(1);
   });
 });
+
+describe("Team 3 review inside Launchpad", () => {
+  const all = ["completeness", "supervision", "timing", "tasks", "learning"];
+  it("keeps Group 2's one-click approve and reject, needs a reason only to request changes, logs REV IDs", async () => {
+    const { reviewListing, latestReview } = await import("@/lib/p02/store");
+    const s0 = seed();
+    const a = reviewListing(s0, "cloud-data-intern", "Approved", { checks: all.slice(0, 4) });
+    expect(latestReview(a, "cloud-data-intern")!.reason).toMatch(/4 of 5 checks/);
+    expect(
+      latestReview(reviewListing(s0, "cloud-data-intern", "Declined"), "cloud-data-intern")!.reason,
+    ).toMatch(/Rejected/);
+    expect(() =>
+      reviewListing(s0, "cloud-data-intern", "Changes Requested", { reason: "" }),
+    ).toThrow(/reason/);
+    const s1 = reviewListing(s0, "cloud-data-intern", "Changes Requested", {
+      reason: "Please name the supervisor.",
+    });
+    expect(s1.listings.find((l) => l.id === "cloud-data-intern")!.status).toBe("Changes Requested");
+    expect(latestReview(s1, "cloud-data-intern")!.id).toBe("REV-0001");
+  });
+  it("an employer fix becomes version 2 with history, back in the queue", async () => {
+    const { reviewListing } = await import("@/lib/p02/store");
+    const s1 = reviewListing(seed(), "cloud-data-intern", "Changes Requested", {
+      reason: "Please name the supervisor.",
+    });
+    const l = s1.listings.find((x) => x.id === "cloud-data-intern")!;
+    const s2 = updateListing(
+      s1,
+      l.id,
+      { ...l, description: `${l.description} Supervisor: Dr. Example, Data Lead.` },
+      NOW,
+    );
+    const v2 = s2.listings.find((x) => x.id === l.id)!;
+    expect(v2.version).toBe(2);
+    expect(v2.status).toBe("Pending Review");
+    expect(v2.history).toHaveLength(2);
+    expect(s2.reviews.at(-1)!.decision).toBe("Resubmitted");
+    const s3 = reviewListing(s2, l.id, "Approved", { checks: all });
+    expect(s3.listings.find((x) => x.id === l.id)!.status).toBe("Approved");
+  });
+});
+
+describe("view follows the page", () => {
+  it("maps addresses to views and leaves shared pages alone", async () => {
+    const { viewForPath } = await import("@/lib/p02/store");
+    expect(viewForPath("/employer/applicants/x")).toBe("employer");
+    expect(viewForPath("/admin/desk")).toBe("admin");
+    expect(viewForPath("/opportunities/da-coop-gulf")).toBe("student");
+    expect(viewForPath("/desk")).toBeNull();
+    expect(viewForPath("/")).toBeNull();
+  });
+});

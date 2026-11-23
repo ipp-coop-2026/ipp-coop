@@ -1,8 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowRight, Building2, CalendarDays, Clock, Lock, MapPin, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import { COMPANIES, type Listing } from "@/lib/p02/data";
-import type { View } from "@/lib/p02/store";
+import { viewForPath, type View } from "@/lib/p02/store";
 
 export const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";

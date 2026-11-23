@@ -19,6 +19,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAiLogsRouteImport } from './routes/admin.ai-logs'
+import { Route as AdminDeskRouteImport } from './routes/admin.desk'
 import { Route as ApiAiReviewRouteImport } from './routes/api/ai-review'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as EmployerIndexRouteImport } from './routes/employer.index'
@@ -85,6 +86,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminAiLogsRoute = AdminAiLogsRouteImport.update({
   id: '/admin/ai-logs',
   path: '/admin/ai-logs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDeskRoute = AdminDeskRouteImport.update({
+  id: '/admin/desk',
+  path: '/admin/desk',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAiReviewRoute = ApiAiReviewRouteImport.update({
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/student': typeof StudentRoute
   '/admin/ai-logs': typeof AdminAiLogsRoute
+  '/admin/desk': typeof AdminDeskRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
   '/employer/listings': typeof EmployerListingsRoute
@@ -212,6 +219,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/student': typeof StudentRoute
   '/admin/ai-logs': typeof AdminAiLogsRoute
+  '/admin/desk': typeof AdminDeskRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
   '/employer/listings': typeof EmployerListingsRoute
@@ -242,6 +250,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/student': typeof StudentRoute
   '/admin/ai-logs': typeof AdminAiLogsRoute
+  '/admin/desk': typeof AdminDeskRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
   '/employer/listings': typeof EmployerListingsRoute
@@ -273,6 +282,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/student'
     | '/admin/ai-logs'
+    | '/admin/desk'
     | '/api/ai-review'
     | '/api/chat'
     | '/employer/listings'
@@ -302,6 +312,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/student'
     | '/admin/ai-logs'
+    | '/admin/desk'
     | '/api/ai-review'
     | '/api/chat'
     | '/employer/listings'
@@ -331,6 +342,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/student'
     | '/admin/ai-logs'
+    | '/admin/desk'
     | '/api/ai-review'
     | '/api/chat'
     | '/employer/listings'
@@ -361,6 +373,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   StudentRoute: typeof StudentRoute
   AdminAiLogsRoute: typeof AdminAiLogsRoute
+  AdminDeskRoute: typeof AdminDeskRoute
   ApiAiReviewRoute: typeof ApiAiReviewRoute
   ApiChatRoute: typeof ApiChatRoute
   EmployerListingsRoute: typeof EmployerListingsRoute
@@ -451,6 +464,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/ai-logs'
       fullPath: '/admin/ai-logs'
       preLoaderRoute: typeof AdminAiLogsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/desk': {
+      id: '/admin/desk'
+      path: '/admin/desk'
+      fullPath: '/admin/desk'
+      preLoaderRoute: typeof AdminDeskRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/ai-review': {
@@ -585,6 +605,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   StudentRoute: StudentRoute,
   AdminAiLogsRoute: AdminAiLogsRoute,
+  AdminDeskRoute: AdminDeskRoute,
   ApiAiReviewRoute: ApiAiReviewRoute,
   ApiChatRoute: ApiChatRoute,
   EmployerListingsRoute: EmployerListingsRoute,
