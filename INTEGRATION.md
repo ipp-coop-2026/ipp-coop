@@ -188,7 +188,7 @@ Added by Team 5 on 23 Nov 2026.
 | Step | What | When |
 | --- | --- | --- |
 | Now | Nav entry "P05 Matching" under **Team modules (external)** opens Team 5's prototype, https://thecyper.github.io/bus2010-p05-opportunity-matcher/, which already reads the shared database live (391 students, 209 published listings) | Sprint 3 |
-| Next | `src/lib/p05/`: the P05 matching engine ported to TypeScript with its tests (rules baseline `rules-1.0.0` and the AI method `ai-embed-1.0.0`, gte-small sentence embeddings); Student → Recommended uses it instead of the stand-in in `src/lib/ai/matching.ts` | Phase 2 |
+| Ready | `src/lib/p05/`: the P05 matching engine in TypeScript (rules baseline `rules-1.0.0` and the AI method `ai-embed-1.0.0`, gte-small sentence embeddings) with 19 tests; `src/components/p05/`: Student → Recommended now shows P05 (top 3 with reasons, all jobs with one plain line each, details sheet, Rules / AI switch, student picker) on the shared database, with the demo slice as fallback. Team 1's stand-in (`src/lib/ai/matching.ts`, `Recommendations.tsx`) is no longer used by the page but is left in place for Team 1 to remove | Phase 2 |
 | Ready | `src/lib/db/`: read-only client for the shared Supabase views that every team can import (`getCurrentProfiles`, `getProfileFeed`, `getOpenListings`, `getOpportunityFeed`, `getSkills`, `getDemonstratedEvidence`, `getLatestRecommendations`, plus the AI helpers `getAiSignals`, `scoreGoalLive`, `suggestSkillsLive`). Fetch only, no new dependency; paging, timeouts and `SharedDbError`. Override the project with `VITE_SHARED_DB_URL` and `VITE_SHARED_DB_KEY` | Phase 2 |
 | Later | P05 writes (recommendations, skill-gap events) through a server route with `P05_TEAM_KEY` from the host environment | Phase 3 |
 

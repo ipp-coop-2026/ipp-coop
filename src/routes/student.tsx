@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Recommendations } from "@/components/Recommendations";
+import { P05Matches } from "@/components/p05/P05Matches";
 import { DEMO_STUDENT_ID, PLACEMENT_STATUS, saveData, searchApprovedOpportunities, submitApplication, updateStudentDisplayName, useIppData, type Student } from "@/lib/ipp-store";
 
 export const Route = createFileRoute("/student")({
@@ -111,7 +111,7 @@ function StudentPage() {
               )}
             </TabsContent>
             <TabsContent value="recommended">
-              <Recommendations data={data} />
+              <P05Matches studentId={DEMO_STUDENT_ID} />
             </TabsContent>
             <TabsContent value="applications">
               <h2 className="mb-4 text-lg font-semibold text-primary">My applications</h2>
