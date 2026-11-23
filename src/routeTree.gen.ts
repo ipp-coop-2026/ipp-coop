@@ -16,9 +16,11 @@ import { Route as EmployerRouteImport } from './routes/employer'
 import { Route as FacultyRouteImport } from './routes/faculty'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as StudentRouteImport } from './routes/student'
+import { Route as AdminSharedRouteImport } from './routes/admin_.shared'
 import { Route as ApiAiReviewRouteImport } from './routes/api/ai-review'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiDeskActionRouteImport } from './routes/api/desk.$action'
+import { Route as ApiP03ReviewRouteImport } from './routes/api/p03.review'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -55,6 +57,11 @@ const StudentRoute = StudentRouteImport.update({
   path: '/student',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSharedRoute = AdminSharedRouteImport.update({
+  id: '/admin_/shared',
+  path: '/admin/shared',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiReviewRoute = ApiAiReviewRouteImport.update({
   id: '/api/ai-review',
   path: '/api/ai-review',
@@ -70,6 +77,11 @@ const ApiDeskActionRoute = ApiDeskActionRouteImport.update({
   path: '/api/desk/$action',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiP03ReviewRoute = ApiP03ReviewRouteImport.update({
+  id: '/api/p03/review',
+  path: '/api/p03/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -79,9 +91,11 @@ export interface FileRoutesByFullPath {
   '/faculty': typeof FacultyRoute
   '/faq': typeof FaqRoute
   '/student': typeof StudentRoute
+  '/admin/shared': typeof AdminSharedRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
+  '/api/p03/review': typeof ApiP03ReviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,9 +105,11 @@ export interface FileRoutesByTo {
   '/faculty': typeof FacultyRoute
   '/faq': typeof FaqRoute
   '/student': typeof StudentRoute
+  '/admin/shared': typeof AdminSharedRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
+  '/api/p03/review': typeof ApiP03ReviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,9 +120,11 @@ export interface FileRoutesById {
   '/faculty': typeof FacultyRoute
   '/faq': typeof FaqRoute
   '/student': typeof StudentRoute
+  '/admin_/shared': typeof AdminSharedRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
+  '/api/p03/review': typeof ApiP03ReviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -118,9 +136,11 @@ export interface FileRouteTypes {
     | '/faculty'
     | '/faq'
     | '/student'
+    | '/admin/shared'
     | '/api/ai-review'
     | '/api/chat'
     | '/api/desk/$action'
+    | '/api/p03/review'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -130,9 +150,11 @@ export interface FileRouteTypes {
     | '/faculty'
     | '/faq'
     | '/student'
+    | '/admin/shared'
     | '/api/ai-review'
     | '/api/chat'
     | '/api/desk/$action'
+    | '/api/p03/review'
   id:
     | '__root__'
     | '/'
@@ -142,9 +164,11 @@ export interface FileRouteTypes {
     | '/faculty'
     | '/faq'
     | '/student'
+    | '/admin_/shared'
     | '/api/ai-review'
     | '/api/chat'
     | '/api/desk/$action'
+    | '/api/p03/review'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -155,9 +179,11 @@ export interface RootRouteChildren {
   FacultyRoute: typeof FacultyRoute
   FaqRoute: typeof FaqRoute
   StudentRoute: typeof StudentRoute
+  AdminSharedRoute: typeof AdminSharedRoute
   ApiAiReviewRoute: typeof ApiAiReviewRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiDeskActionRoute: typeof ApiDeskActionRoute
+  ApiP03ReviewRoute: typeof ApiP03ReviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -211,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/shared': {
+      id: '/admin_/shared'
+      path: '/admin/shared'
+      fullPath: '/admin/shared'
+      preLoaderRoute: typeof AdminSharedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai-review': {
       id: '/api/ai-review'
       path: '/api/ai-review'
@@ -232,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDeskActionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/p03/review': {
+      id: '/api/p03/review'
+      path: '/api/p03/review'
+      fullPath: '/api/p03/review'
+      preLoaderRoute: typeof ApiP03ReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -243,9 +283,11 @@ const rootRouteChildren: RootRouteChildren = {
   FacultyRoute: FacultyRoute,
   FaqRoute: FaqRoute,
   StudentRoute: StudentRoute,
+  AdminSharedRoute: AdminSharedRoute,
   ApiAiReviewRoute: ApiAiReviewRoute,
   ApiChatRoute: ApiChatRoute,
   ApiDeskActionRoute: ApiDeskActionRoute,
+  ApiP03ReviewRoute: ApiP03ReviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

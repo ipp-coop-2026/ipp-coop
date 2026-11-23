@@ -157,6 +157,14 @@ Desk server settings (environment variables, server side only, never in git):
 - `ANTHROPIC_API_KEY`: optional. With it, Claude Haiku reads the policy entries and sorts each message. Without it, the desk matches the policy entries directly. Limits: 10 questions per browser session, 150 AI calls per day.
 - `DESK_REDIS_URL`: optional Redis REST endpoint so every visitor sees the same cases. Without it, desk records live in server memory and reset on restart. When Team 5 gives P03 a write key for the shared Supabase, `desk-server.ts` is the one file to change.
 
+Added later on 23 Nov (the AI reviewer, review rules, Decline, and the shared-database queue):
+
+| Route / file | What it does |
+| --- | --- |
+| `/admin` → AI reviewer, review rules, Decline | Claude Haiku reads a listing against the five checks and the coordinator's rules and drafts a reason (`/api/ai-review`, `ANTHROPIC_API_KEY`); suggestions only. Decline needs a reason and is final. |
+| `/admin/shared` | Sara's review queue on Team 5's shared database: every team's listings, read live through `@/lib/db`. Stages and rules in `src/lib/p03/README.md`. |
+| `/api/p03/review` | P03 writes to `listing_reviews` and `listings` with `P03_TEAM_KEY` (server only). Off without the key; `P03_WRITE_SCOPE=sandbox` (default) allows only `OP-999`, `all` allows every listing except the protected demo thread `OP-026`…`OP-031`. Re-reads the database before every write, so a stale page cannot overwrite a newer decision. Checked live against the sandbox on 23 Nov. |
+
 Review IDs: P03 uses `REV-0001` (four digits), the shared database format. Team 1's faculty reviews use `REV-028`; that clash is still open (section 10, question 3).
 
 ## 12. Hosting on Cohesivity (one command)

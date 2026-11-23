@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState, type ReactNode } from "react";
 import { Sparkles } from "lucide-react";
 import { AppShell, Card, PageHeader, Status } from "@/components/AppShell";
@@ -120,6 +120,19 @@ function AdminPage() {
         title="University Administrator"
         subtitle="P03 review and publication. Sara Ahmed (Careers coordinator) checks each employer opportunity, then publishes it so students can see it. Administrator access is simulated."
       />
+      <Link
+        to="/admin/shared"
+        className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-card p-3 text-sm hover:bg-muted"
+      >
+        <span>
+          <span className="font-semibold">Shared review queue</span>
+          <span className="text-muted-foreground">
+            {" "}
+            · every team's listings in Team 5's shared database, read live
+          </span>
+        </span>
+        <span className="font-medium text-primary">Open</span>
+      </Link>
       {notice && (
         <p role="status" className="mb-4 rounded-lg bg-status p-3 text-status-foreground">
           {notice}
