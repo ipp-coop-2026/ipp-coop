@@ -191,6 +191,11 @@ export function stageCounts(items: SharedItem[]): Record<Stage, number> {
   return c;
 }
 
+/** Listings students can see now: open at their approved version, even when a newer version is under review. */
+export function openListings(items: SharedItem[]): SharedItem[] {
+  return items.filter((i) => i.listing?.listing_status === "open");
+}
+
 /** The five P03 checks applied to a shared-database version. Hints only; the coordinator ticks every check. */
 export function sharedHints(v: VersionRow): Record<CheckKey, CheckHint> {
   const missing = [

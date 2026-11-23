@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  openListings,
   byStage,
   deriveItems,
   sharedChanges,
@@ -84,6 +85,7 @@ describe("shared review: stages", () => {
     expect(stage("OP-106")).toBe("withdrawn");
     expect(stage("OP-107")).toBe("waiting_employer");
     expect(stageCounts(items).pending).toBe(2);
+    expect(openListings(items).map((i) => i.id)).toEqual(["OP-104"]);
   });
   it("keeps the previous version for the diff and sorts the queue oldest first", () => {
     const op102 = items.find((i) => i.id === "OP-102")!;

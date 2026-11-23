@@ -8,6 +8,7 @@ import {
   deriveItems,
   getWriteStatus,
   loadShared,
+  openListings,
   SANDBOX_ID,
   sendWrite,
   sharedChanges,
@@ -126,7 +127,7 @@ function SharedReviewPage() {
             ["Waiting for review", counts.pending],
             ["Waiting for the employer", counts.waiting_employer],
             ["Ready to publish", counts.ready_to_publish],
-            ["Open listings", counts.open],
+            ["Open listings", openListings(items).length],
             ["Closed, withdrawn or declined", counts.closed + counts.withdrawn + counts.declined],
           ] as [string, number][]
         ).map(([label, n]) => (
@@ -195,7 +196,7 @@ function SharedReviewPage() {
             <p className="mb-3 text-muted-foreground">
               What students see. Close a listing when it is filled.
             </p>
-            <SearchList items={byStage(items, "open")}>
+            <SearchList items={openListings(items)}>
               {(i) => (
                 <Row item={i}>
                   <span className="text-xs text-muted-foreground">
