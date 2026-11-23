@@ -187,6 +187,11 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
             <p className="text-xs text-muted-foreground">
               Co-op Internship Practicum Platform · University demo prototype
             </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Interface and employer side by{" "}
+              <span className="font-medium text-heading">Group 2 (P02, Employer)</span>, with parts
+              from Teams 1, 3 and 5.
+            </p>
           </div>
           <button
             type="button"

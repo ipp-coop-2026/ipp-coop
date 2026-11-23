@@ -87,3 +87,18 @@ describe("AI reviewer input and output handling", () => {
     expect(() => parseReply("no json here")).toThrow();
   });
 });
+
+describe("AI reviewer reply repair", () => {
+  it("salvages a cut-off reply and one with a stray quote", () => {
+    const cut =
+      '{"checks":{"completeness":{"status":"ok","note":"All fields."},"supervision":{"status":"problem","note":"No supervisor named."},"timing":{"status":"ok","note":"12 weeks"}},"rule_flags":[],"summary":"Mostly complete.","draft_reason":"Please name the superv';
+    const r: { checks: Record<string, { status: string }>; summary: string } = parseReply(cut);
+    expect(r.checks["supervision"]?.status).toBe("problem");
+    expect(r.checks["learning"]?.status).toBe("judgement");
+    expect(r.summary).toBe("Mostly complete.");
+    const quote =
+      '{"checks":{"tasks":{"status":"ok","note":"Lists "real" tasks."}},"rule_flags":[],"summary":"Fine.","draft_reason":""}';
+    const q: { summary: string } = parseReply(quote);
+    expect(q.summary).toBe("Fine.");
+  });
+});

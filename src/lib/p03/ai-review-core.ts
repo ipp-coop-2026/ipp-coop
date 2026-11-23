@@ -73,11 +73,41 @@ ${submission.description}
 const STATUSES = new Set(['ok', 'problem', 'judgement']);
 
 /** Parses and validates the model's JSON. Throws if the shape is wrong. */
+/** Reads a field-by-field answer out of a reply whose JSON is broken (cut off, or a stray quote in a note). */
+function salvage(text) {
+  const str = (name) => {
+    const m = new RegExp('"' + name + '"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"').exec(text);
+    return m ? m[1].replace(/\\\\"/g, '"') : '';
+  };
+  const checks = {};
+  for (const [key] of CHECKS) {
+    const m = new RegExp('"' + key + '"\\s*:\\s*\\{\\s*"status"\\s*:\\s*"(ok|problem|judgement)"\\s*,\\s*"note"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"').exec(text);
+    if (m) checks[key] = { status: m[1], note: m[2] };
+  }
+  const flags = /"rule_flags"\s*:\s*\[([^\]]*)\]/.exec(text);
+  return {
+    checks,
+    rule_flags: flags ? (flags[1].match(/"((?:[^"\\]|\\.)*)"/g) || []).map((x) => x.slice(1, -1)) : [],
+    summary: str('summary'),
+    draft_reason: str('draft_reason'),
+  };
+}
+
+/** Parses and validates the model's JSON. Tolerates a cut-off or slightly broken reply. Throws only if nothing is usable. */
 export function parseReply(text) {
   const start = text.indexOf('{');
+  if (start < 0) throw new Error('The AI reply was not JSON.');
   const end = text.lastIndexOf('}');
-  if (start < 0 || end <= start) throw new Error('The AI reply was not JSON.');
-  const raw = JSON.parse(text.slice(start, end + 1));
+  let raw = null;
+  try {
+    raw = end > start ? JSON.parse(text.slice(start, end + 1)) : null;
+  } catch {
+    raw = null;
+  }
+  if (!raw) {
+    raw = salvage(text.slice(start));
+    if (!Object.keys(raw.checks).length && !raw.summary) throw new Error('The AI reply was not JSON.');
+  }
   const checks = {};
   for (const [key] of CHECKS) {
     const c = raw.checks && raw.checks[key];
@@ -103,7 +133,7 @@ export async function reviewWithClaude(input, { apiKey, models, fetchImpl = fetc
     const r = await fetchImpl('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model, max_tokens: 700, system, messages: [{ role: 'user', content: user }] }),
+      body: JSON.stringify({ model, max_tokens: 1200, system, messages: [{ role: 'user', content: user }, { role: 'assistant', content: '{' }] }),
     });
     if (r.status === 404 || r.status === 400) {
       lastError = `Model ${model} unavailable (${r.status}).`;
@@ -111,7 +141,7 @@ export async function reviewWithClaude(input, { apiKey, models, fetchImpl = fetc
     }
     if (!r.ok) throw new Error(`AI service error ${r.status}.`);
     const body = await r.json();
-    const text = (body.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('');
+    const text = '{' + (body.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('');
     return { ...parseReply(text), model };
   }
   throw new Error(lastError);

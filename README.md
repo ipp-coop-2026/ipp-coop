@@ -19,38 +19,27 @@
 
 ## What it does
 
-The app follows one internship listing from start to finish, across the class teams' parts:
+The common app uses **Group 2's Launchpad** (P02, Employer) as its interface and base, agreed by the teams on 23 Nov 2026. One listing goes from employer to university to student, with AI that only suggests and a person who decides at every step.
 
-| Step | Who | Page | Owner |
-| --- | --- | --- | --- |
-| 1. Post an opportunity | Employer HR | `/employer` | P02 (Team 2), stand-in by Team 1 |
-| 2. Review, approve and publish | University staff | `/admin` | **P03 (Team 3)** |
-| 3. Find, get recommendations and apply | Student | `/student` | P01 (Team 1), P04, P05 |
-| 4. See applications | Faculty reviewer | `/faculty` | To be decided at the Scrum of Scrums |
-| 5. Get help during the internship | Student, supervisor, Career Services | `/desk` | **P03 (Team 3)** |
-| Help and FAQ | Everyone | `/faq`, "Ask IPP" button | P01 (Team 1) |
+| View | Pages | Built by |
+| --- | --- | --- |
+| Student | Profile, Opportunities with "Recommended for you", My Applications, IPP Assistant | **Group 2 (P02)** Launchpad; Internship Desk by Team 3 (P03) |
+| Employer | Dashboard with insights and top candidates, My Listings, Applicants, Post Opportunity with AI drafting | **Group 2 (P02)** |
+| Admin | Admin Review (listings and placements), AI Review Log | **Group 2 (P02)**; listing checklist and AI reviewer by Team 3 (P03); shared listing queue (P03) and match checks (Team 5, P05) |
 
 ### AI features
 
-| Feature | What it does | Human in charge |
-| --- | --- | --- |
-| **AI reviewer** (`/admin`) | Reads an employer listing against the five review checks and the coordinator's own rules, then drafts a reason for the employer | The coordinator ticks every check and makes the decision; the decision log marks when an AI draft was used |
-| **Internship Desk** (`/desk`) | Answers student and supervisor questions only from the MBZUAI 2025–2026 Industry Internship Guide, escalates urgent cases to Career Services, and records questions it cannot answer | Career Services resolves escalations and adds new guide entries |
-| **FAQ chatbot** (`/faq`) | Answers from the approved FAQ and cites the entry it used | Anything outside the FAQ goes to the co-op office |
-| **Recommendations** (`/student`) | Rules-based top three listings with reasons and gaps | A recommendation is never a placement |
+| Feature | Where | Built by | Human in charge |
+| --- | --- | --- | --- |
+| IPP Assistant (FAQ chatbot) | Student, floating button | Group 2 (P02) | Answers only from the approved FAQ; "Talk to a human" hands off to the co-op coordinator |
+| Recommended for you | Student → Opportunities | Group 2 (P02) | Suggestions with reasons; placements are approved by a person |
+| Draft with AI, Improve wording, Make shorter, Suggest skills | Employer → Post Opportunity | Group 2 (P02) | The employer edits and submits; the admin approves the listing |
+| AI analysis, interview questions, message drafts, AI assistant | Employer → Applicants | Group 2 (P02) | Only a person can shortlist or reject |
+| AI Review Log | Admin | Group 2 (P02) | Every AI output is logged |
+| AI reviewer and five-check checklist | Admin → pending listings | Team 3 (P03) | The coordinator ticks every check and decides |
+| Internship Desk | Student | Team 3 (P03) | Problems go to Career Services |
 
-Every AI feature falls back to a non-AI mode (guide matching, FAQ lookup, rule-based hints) when no model key is set on the host, so the demo always works.
-
-<table>
-<tr>
-<td width="50%"><img src="docs/screenshots/student.jpg" alt="Student view with published opportunities"></td>
-<td width="50%"><img src="docs/screenshots/desk.jpg" alt="Internship Desk chat for students and supervisors"></td>
-</tr>
-<tr>
-<td align="center">Student: published listings</td>
-<td align="center">Internship Desk</td>
-</tr>
-</table>
+Every AI feature works without a model key (approved FAQ, rules or templates) and says so on screen.
 
 ## Quick start
 
@@ -116,4 +105,11 @@ One repository, one app, one module per team ([architecture](docs/ARCHITECTURE.m
 
 ## Credits
 
-Built by the BUS 2010 (Fall 2026) class teams at MBZUAI. The base app is Team 1's (P01); Team 3 (P03) added review and publication, the AI reviewer and the Internship Desk. Policy answers come from the MBZUAI 2025–2026 Industry Internship Guide.
+Built by the BUS 2010 (Fall 2026) class teams at MBZUAI.
+
+- **Group 2 (P02, Employer): Launchpad**, the interface and base of this app: the student, employer and admin views and their AI features. Original prototype: launch-path-ipp.base44.app.
+- Team 1 (P01): the first common app, Student profiles and the FAQ chatbot.
+- Team 3 (P03): listing review and publication, the AI reviewer, the Internship Desk, the shared-database review queue and the common repository.
+- Team 5 (P05): matching engine, match checks and the shared Supabase database.
+
+Policy answers in the Internship Desk come from the MBZUAI 2025–2026 Industry Internship Guide.
