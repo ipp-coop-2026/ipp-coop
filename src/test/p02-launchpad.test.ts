@@ -1,111 +1,121 @@
 import { describe, expect, it } from "vitest";
-import { durationLabel, filterListings, kindOf, toListing } from "@/lib/p02/listings";
+import { cleanRequest, fallback, faqMatch, NO_ANSWER, parseModel } from "@/lib/p02/ai-core";
+import { LISTINGS, SKILLS, STUDENTS } from "@/lib/p02/data";
+import { matchOne, recommend } from "@/lib/p02/match";
 import {
-  addSkills,
-  applyTo,
-  counts,
-  decide,
-  myApplications,
-  saveProfileTo,
-  validateProfile,
+  apply,
+  deleteListing,
   EMPTY_PROFILE,
-  type StudentState,
-} from "@/lib/p02/student-store";
-import { modeForPath } from "@/components/AppShell";
+  openListings,
+  postListing,
+  saveProfile,
+  seed,
+  setAppStatus,
+  updateListing,
+  validateListing,
+} from "@/lib/p02/store";
 
-const row = {
-  opportunity_id: "OP-100",
-  version: 2,
-  employer_id: "EMP-1",
-  employer: "Acme",
-  title: "Data Intern",
-  sector: null,
-  role_family: null,
-  city: "Dubai",
-  work_arrangement: "hybrid" as const,
-  start_date: "2027-02-01",
-  end_date: "2027-05-01",
-  description: "Synthetic",
-  tasks: ["Clean data"],
-  submission_status: "submitted",
-  approved_version: 2,
-  listing_status: "open" as const,
-  published_at: null,
-  closed_on: null,
-  mandatory: [
-    { kind: "skill" as const, skill_id: "SK-SQL-01" },
-    { kind: "availability" as const, skill_id: null },
-    {
-      kind: "arrangement" as const,
-      skill_id: null,
-      arrangements: ["hybrid" as const],
-      city: "Dubai",
-    },
-  ],
-  desirable: [{ kind: "skill" as const, skill_id: "SK-PBI-01" }],
-};
+const NOW = new Date("2026-11-23T12:00:00Z");
+const aisha = STUDENTS.find((s) => s.id === "aisha")!;
 
-describe("listings from the shared database", () => {
-  it("maps a row to plain words", () => {
-    const l = toListing(
-      row,
-      new Map([
-        ["SK-SQL-01", "SQL"],
-        ["SK-PBI-01", "Power BI"],
-      ]),
+describe("Launchpad data", () => {
+  it("matches Team 2's deck: 13 open listings, 18 standard skills, only standard skills used", () => {
+    expect(openListings(seed(), NOW)).toHaveLength(13);
+    expect(SKILLS).toHaveLength(18);
+    const used = LISTINGS.flatMap((l) => [...l.required, ...l.preferred]);
+    expect(used.filter((s) => !SKILLS.includes(s))).toEqual([]);
+  });
+});
+
+describe("matching", () => {
+  it("ranks Aisha's top match as the Computer Vision Intern, with reasons", () => {
+    const top = recommend(aisha, openListings(seed(), NOW), 3, NOW);
+    expect(top[0]!.listingId).toBe("cv-intern-falcon");
+    expect(top[0]!.score).toBe(67);
+    expect(top[0]!.required.find((r) => r.skill === "Computer Vision")!.has).toBe(false);
+    expect(top).toHaveLength(3);
+  });
+  it("checks year and deadline separately from the score", () => {
+    const noor = STUDENTS.find((s) => s.id === "noor")!;
+    const m = matchOne(
+      noor,
+      LISTINGS.find((l) => l.id === "da-coop-gulf")!,
+      NOW,
     );
-    expect(l.skills).toEqual(["SQL", "Power BI"]);
-    expect(l.requirements).toEqual([
-      "SQL",
-      "Available for the full placement dates",
-      "Can work hybrid in Dubai",
-    ]);
-    expect(l.niceToHave).toEqual(["Power BI"]);
-    expect(l.arrangement).toBe("Hybrid");
-    expect(l.duration).toBe("13 weeks");
-    expect(l.kind).toBe("Internship");
-  });
-  it("labels long placements as co-op and handles missing dates", () => {
-    expect(kindOf("2027-01-01", "2027-07-01")).toBe("Co-op");
-    expect(durationLabel(null, "2027-01-01")).toBe("");
-    expect(durationLabel("2027-01-01", "2027-07-01")).toBe("6 months");
-  });
-  it("filters by text, city and type", () => {
-    const l = toListing(row, new Map([["SK-SQL-01", "SQL"]]));
-    expect(filterListings([l], { q: "sql", city: "", kind: "" })).toHaveLength(1);
-    expect(filterListings([l], { q: "", city: "Abu Dhabi", kind: "" })).toHaveLength(0);
-    expect(filterListings([l], { q: "", city: "", kind: "Co-op" })).toHaveLength(0);
+    expect(m.yearOk).toBe(false);
+    expect(m.deadlineOpen).toBe(true);
   });
 });
 
-describe("student profile and applications", () => {
-  const empty: StudentState = { profile: null, applications: [] };
-  const profile = {
-    ...EMPTY_PROFILE,
-    fullName: "Aisha Al Zaabi",
-    email: "aisha@university.example",
+describe("student flow", () => {
+  it("needs a profile, blocks duplicates and low years", () => {
+    const s0 = seed();
+    expect(() => apply(s0, "bi-intern-gulf", NOW)).toThrow(/profile first/);
+    const s1 = saveProfile(s0, {
+      ...EMPTY_PROFILE,
+      name: "Susan Test",
+      email: "s@university.example",
+      year: "1",
+    });
+    expect(() => apply(s1, "bi-intern-gulf", NOW)).toThrow(/year 2/);
+    const s2 = saveProfile(s1, { ...s1.profile!, year: "3" });
+    const s3 = apply(s2, "bi-intern-gulf", NOW);
+    expect(() => apply(s3, "bi-intern-gulf", NOW)).toThrow(/already applied/);
+    expect(setAppStatus(s3, s3.applications[0]!.id, "Shortlisted").applications[0]!.status).toBe(
+      "Shortlisted",
+    );
+  });
+});
+
+describe("employer flow", () => {
+  const input = {
+    title: "Data Intern",
+    city: "Dubai",
+    type: "Internship" as const,
+    mode: "Remote" as const,
+    duration: "12 weeks",
+    minYear: 2,
+    deadline: "2027-03-01",
+    required: ["SQL"],
+    preferred: [],
+    summary: "",
+    description: "Help the analytics team clean data and build weekly dashboards.",
+    requirements: [],
   };
-  it("requires a name and a valid email, and dedupes skills", () => {
-    expect(Object.keys(validateProfile(EMPTY_PROFILE))).toEqual(["fullName", "email"]);
-    expect(addSkills(["SQL"], "sql, Python ,  ,python")).toEqual(["SQL", "Python"]);
-  });
-  it("blocks applying without a profile and applying twice", () => {
-    const l = { id: "OP-100", title: "Data Intern", employer: "Acme" };
-    expect(() => applyTo(empty, l)).toThrow(/profile first/);
-    const s1 = saveProfileTo(empty, profile);
-    const { state: s2, id } = applyTo(s1, l);
-    expect(myApplications(s2)).toHaveLength(1);
-    expect(() => applyTo(s2, l)).toThrow(/already applied/);
-    const s3 = decide(s2, id, "Approved");
-    expect(counts(s3.applications)).toEqual({ submitted: 0, approved: 1, rejected: 0 });
+  it("posts as Pending Review, edits back to Pending Review, deletes with its applications", () => {
+    expect(Object.keys(validateListing({ ...input, title: "", required: [] }))).toEqual([
+      "title",
+      "required",
+    ]);
+    const s1 = postListing(seed(), input, NOW);
+    expect(s1.listings[0]!.status).toBe("Pending Review");
+    expect(s1.listings[0]!.companyId).toBe("gulf-insight");
+    const s2 = updateListing(
+      {
+        ...s1,
+        listings: s1.listings.map((l, i) => (i === 0 ? { ...l, status: "Approved" as const } : l)),
+      },
+      s1.listings[0]!.id,
+      { ...input, title: "Data Intern 2" },
+    );
+    expect(s2.listings[0]!.status).toBe("Pending Review");
+    const s3 = deleteListing(seed(), "bi-intern-gulf");
+    expect(s3.applications.some((a) => a.listingId === "bi-intern-gulf")).toBe(false);
   });
 });
 
-describe("view as switch", () => {
-  it("admin pages switch to admin, student pages to student, shared pages keep the last view", () => {
-    expect(modeForPath("/admin/shared")).toBe("admin");
-    expect(modeForPath("/opportunities/OP-1", "admin")).toBe("student");
-    expect(modeForPath("/desk", "admin")).toBe("admin");
-    expect(modeForPath("/employer")).toBe("student");
+describe("AI tasks", () => {
+  it("answers from the approved FAQ and refuses anything else", () => {
+    expect(faqMatch("Who approves my placement?")?.a).toMatch(/AI never approves/);
+    expect(fallback({ task: "chat", text: "Can I bring my pet?" }).text).toBe(NO_ANSWER);
+  });
+  it("rejects unknown tasks and keeps suggested skills on the standard list", () => {
+    expect(cleanRequest({ task: "approve" })).toBeNull();
+    const a = parseModel({ task: "suggest_skills" }, "Python, Kubernetes, sql, Excel", "m");
+    expect(a.items).toEqual(["Python", "SQL", "Excel"]);
+    expect(
+      fallback({ task: "questions", context: { title: "BI Intern", required: ["SQL"] } }).items!
+        .length,
+    ).toBeGreaterThan(1);
   });
 });

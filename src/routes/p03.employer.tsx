@@ -22,7 +22,7 @@ import {
   type ReviewItem,
 } from "@/lib/p03/review";
 
-export const Route = createFileRoute("/employer")({
+export const Route = createFileRoute("/p03/employer")({
   head: () => ({
     meta: [
       { title: "Employer HR view · IPP" },

@@ -35,7 +35,7 @@ import {
   type ReviewItem,
 } from "@/lib/p03/review";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/p03/")({
   head: () => ({
     meta: [
       { title: "University Administrator view · IPP" },
@@ -121,7 +121,7 @@ function AdminPage() {
         subtitle="P03 review and publication. Sara Ahmed (Careers coordinator) checks each employer opportunity, then publishes it so students can see it. Administrator access is simulated."
       />
       <Link
-        to="/admin/shared"
+        to="/p03/shared"
         className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-card p-3 text-sm hover:bg-muted"
       >
         <span>

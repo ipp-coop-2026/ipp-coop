@@ -1,67 +1,58 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { GraduationCap, Menu, RotateCcw, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { resetDemo } from "@/lib/ipp-store";
-import { resetStudent } from "@/lib/p02/student-store";
+import { Assistant } from "@/components/p02/Assistant";
+import { commit, resetLaunchpad, useLaunchpad, type View } from "@/lib/p02/store";
 
 /*
- * App frame copied from Team 2's Launchpad prototype (agreed UI base, 23 Nov 2026): a white header with the
- * brand, Profile / Opportunities / My Applications (plus Admin Review in admin view), a "View as" Student |
- * Admin switch, then the page, then the footer. Other teams' pages (/matches, /desk, /admin, /employer,
- * /faculty, /p05/coordinator, /faq) still work by URL; they get a place in this header once the teams agree how.
+ * App frame copied from Team 2's Launchpad (agreed UI base, 23 Nov 2026): brand, the current view's pages,
+ * a "Team Modules" menu, VIEW AS Student | Employer | Admin, the page, then the footer. The view lives in
+ * the Launchpad store (src/lib/p02/store.ts); pages for another view show a "… only" notice, as on Launchpad.
+ * Other teams' own pages (/p03, /p05/coordinator, /desk, /matches, /faq) still work by URL.
  */
 
 type NavItem = { to: string; label: string };
-export type Mode = "student" | "admin";
 
-const STUDENT_NAV: NavItem[] = [
-  { to: "/profile", label: "Profile" },
-  { to: "/opportunities", label: "Opportunities" },
-  { to: "/applications", label: "My Applications" },
+const NAV: Record<View, NavItem[]> = {
+  student: [
+    { to: "/profile", label: "Profile" },
+    { to: "/opportunities", label: "Opportunities" },
+    { to: "/applications", label: "My Applications" },
+  ],
+  employer: [
+    { to: "/employer", label: "Dashboard" },
+    { to: "/employer/listings", label: "My Listings" },
+    { to: "/employer/post", label: "Post Opportunity" },
+  ],
+  admin: [
+    { to: "/admin", label: "Admin Review" },
+    { to: "/admin/ai-logs", label: "AI Review Log" },
+  ],
+};
+
+const VIEWS: { id: View; label: string; home: string }[] = [
+  { id: "student", label: "Student", home: "/opportunities" },
+  { id: "employer", label: "Employer", home: "/employer" },
+  { id: "admin", label: "Admin", home: "/admin" },
 ];
-const ADMIN_NAV: NavItem[] = [...STUDENT_NAV, { to: "/admin/applications", label: "Admin Review" }];
-
-const MODE_KEY = "ipp-view-as";
-
-/** Admin pages switch to admin view, student pages to student view; shared pages keep the last view. */
-export function modeForPath(path: string, last: Mode = "student"): Mode {
-  if (path.startsWith("/admin") || path.startsWith("/p05")) return "admin";
-  if (["/profile", "/opportunities", "/applications", "/matches"].some((p) => path.startsWith(p)))
-    return "student";
-  return last;
-}
-
-function useMode(path: string): Mode {
-  const [last, setLast] = useState<Mode>("student");
-  useEffect(() => {
-    try {
-      if (window.localStorage.getItem(MODE_KEY) === "admin") setLast("admin");
-    } catch {
-      /* storage blocked */
-    }
-  }, []);
-  const mode = modeForPath(path, last);
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(MODE_KEY, mode);
-    } catch {
-      /* ignore */
-    }
-  }, [mode]);
-  return mode;
-}
 
 const focus = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 export function AppShell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const mode = useMode(path);
-  const nav = mode === "admin" ? ADMIN_NAV : STUDENT_NAV;
+  const navigate = useNavigate();
+  const lp = useLaunchpad();
+  const view: View = lp?.view ?? "student";
   const [menu, setMenu] = useState(false);
   useEffect(() => setMenu(false), [path]);
 
   const isActive = (to: string) =>
-    to === "/admin" ? path === "/admin" : path === to || path.startsWith(`${to}/`);
+    to === "/employer" || to === "/admin" ? path === to : path === to || path.startsWith(`${to}/`);
+  const switchView = (v: (typeof VIEWS)[number]) => {
+    commit((s) => ({ ...s, view: v.id }));
+    void navigate({ to: v.home });
+  };
   const onReset = () => {
     if (
       window.confirm(
@@ -69,7 +60,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
       )
     ) {
       resetDemo();
-      resetStudent();
+      resetLaunchpad();
     }
   };
 
@@ -79,24 +70,16 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
       aria-label="View as"
       className="flex rounded-full border border-border bg-muted p-0.5"
     >
-      {(
-        [
-          ["student", "Student", "/opportunities"],
-          ["admin", "Admin", "/admin/applications"],
-        ] as const
-      ).map(([m, label, to]) => (
-        <Link
-          key={m}
-          to={to}
-          aria-pressed={mode === m}
-          className={`rounded-full px-3.5 py-1 text-xs font-semibold transition-colors ${focus} ${
-            mode === m
-              ? "bg-card text-heading shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
+      {VIEWS.map((v) => (
+        <button
+          key={v.id}
+          type="button"
+          aria-pressed={view === v.id}
+          onClick={() => switchView(v)}
+          className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${focus} ${view === v.id ? "bg-card text-heading shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
         >
-          {label}
-        </Link>
+          {v.label}
+        </button>
       ))}
     </div>
   );
@@ -127,16 +110,12 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
           </Link>
 
           <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-            {nav.map((n) => (
+            {NAV[view].map((n) => (
               <Link
                 key={n.to}
                 to={n.to}
                 aria-current={isActive(n.to) ? "page" : undefined}
-                className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${focus} ${
-                  isActive(n.to)
-                    ? "bg-accent text-accent-foreground"
-                    : "text-foreground hover:bg-muted"
-                }`}
+                className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${focus} ${isActive(n.to) ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-muted"}`}
               >
                 {n.label}
               </Link>
@@ -174,7 +153,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
               {toggle}
             </div>
             <nav aria-label="Main" className="mb-3 flex flex-col">
-              {nav.map((n) => (
+              {NAV[view].map((n) => (
                 <Link
                   key={n.to}
                   to={n.to}
@@ -198,7 +177,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
       <footer className="border-t border-border bg-card">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm md:px-6">
           <div>
-            <p className="font-medium text-heading">IPP | Sprint 3 | All groups</p>
+            <p className="font-medium text-heading">IPP | Sprint 3 | Group 2</p>
             <p className="text-xs text-muted-foreground">
               Co-op Internship Practicum Platform · University demo prototype
             </p>
@@ -212,6 +191,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
           </button>
         </div>
       </footer>
+      <Assistant />
     </div>
   );
 }

@@ -10,33 +10,35 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ApplicationsRouteImport } from './routes/applications'
 import { Route as DeskRouteImport } from './routes/desk'
-import { Route as EmployerRouteImport } from './routes/employer'
 import { Route as FacultyRouteImport } from './routes/faculty'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as StudentRouteImport } from './routes/student'
-import { Route as AdminApplicationsRouteImport } from './routes/admin_.applications'
-import { Route as AdminSharedRouteImport } from './routes/admin_.shared'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAiLogsRouteImport } from './routes/admin.ai-logs'
 import { Route as ApiAiReviewRouteImport } from './routes/api/ai-review'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as EmployerIndexRouteImport } from './routes/employer.index'
+import { Route as EmployerListingsRouteImport } from './routes/employer.listings'
+import { Route as EmployerPostRouteImport } from './routes/employer.post'
 import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
+import { Route as P03IndexRouteImport } from './routes/p03.index'
+import { Route as P03EmployerRouteImport } from './routes/p03.employer'
+import { Route as P03SharedRouteImport } from './routes/p03.shared'
 import { Route as P05CoordinatorRouteImport } from './routes/p05.coordinator'
 import { Route as ApiDeskActionRouteImport } from './routes/api/desk.$action'
+import { Route as ApiP02AiRouteImport } from './routes/api/p02.ai'
 import { Route as ApiP03ReviewRouteImport } from './routes/api/p03.review'
+import { Route as EmployerApplicantsIdRouteImport } from './routes/employer.applicants.$id'
+import { Route as EmployerEditIdRouteImport } from './routes/employer.edit.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApplicationsRoute = ApplicationsRouteImport.update({
@@ -47,11 +49,6 @@ const ApplicationsRoute = ApplicationsRouteImport.update({
 const DeskRoute = DeskRouteImport.update({
   id: '/desk',
   path: '/desk',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EmployerRoute = EmployerRouteImport.update({
-  id: '/employer',
-  path: '/employer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FacultyRoute = FacultyRouteImport.update({
@@ -79,14 +76,14 @@ const StudentRoute = StudentRouteImport.update({
   path: '/student',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
-  id: '/admin_/applications',
-  path: '/admin/applications',
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSharedRoute = AdminSharedRouteImport.update({
-  id: '/admin_/shared',
-  path: '/admin/shared',
+const AdminAiLogsRoute = AdminAiLogsRouteImport.update({
+  id: '/admin/ai-logs',
+  path: '/admin/ai-logs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAiReviewRoute = ApiAiReviewRouteImport.update({
@@ -99,6 +96,21 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmployerIndexRoute = EmployerIndexRouteImport.update({
+  id: '/employer/',
+  path: '/employer/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployerListingsRoute = EmployerListingsRouteImport.update({
+  id: '/employer/listings',
+  path: '/employer/listings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployerPostRoute = EmployerPostRouteImport.update({
+  id: '/employer/post',
+  path: '/employer/post',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
   id: '/opportunities/',
   path: '/opportunities/',
@@ -107,6 +119,21 @@ const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
 const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
   id: '/opportunities/$id',
   path: '/opportunities/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const P03IndexRoute = P03IndexRouteImport.update({
+  id: '/p03/',
+  path: '/p03/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const P03EmployerRoute = P03EmployerRouteImport.update({
+  id: '/p03/employer',
+  path: '/p03/employer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const P03SharedRoute = P03SharedRouteImport.update({
+  id: '/p03/shared',
+  path: '/p03/shared',
   getParentRoute: () => rootRouteImport,
 } as any)
 const P05CoordinatorRoute = P05CoordinatorRouteImport.update({
@@ -119,162 +146,226 @@ const ApiDeskActionRoute = ApiDeskActionRouteImport.update({
   path: '/api/desk/$action',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiP02AiRoute = ApiP02AiRouteImport.update({
+  id: '/api/p02/ai',
+  path: '/api/p02/ai',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiP03ReviewRoute = ApiP03ReviewRouteImport.update({
   id: '/api/p03/review',
   path: '/api/p03/review',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmployerApplicantsIdRoute = EmployerApplicantsIdRouteImport.update({
+  id: '/employer/applicants/$id',
+  path: '/employer/applicants/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmployerEditIdRoute = EmployerEditIdRouteImport.update({
+  id: '/employer/edit/$id',
+  path: '/employer/edit/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/applications': typeof ApplicationsRoute
   '/desk': typeof DeskRoute
-  '/employer': typeof EmployerRoute
   '/faculty': typeof FacultyRoute
   '/faq': typeof FaqRoute
   '/matches': typeof MatchesRoute
   '/profile': typeof ProfileRoute
   '/student': typeof StudentRoute
-  '/admin/applications': typeof AdminApplicationsRoute
-  '/admin/shared': typeof AdminSharedRoute
+  '/admin/ai-logs': typeof AdminAiLogsRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
+  '/employer/listings': typeof EmployerListingsRoute
+  '/employer/post': typeof EmployerPostRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/p03/employer': typeof P03EmployerRoute
+  '/p03/shared': typeof P03SharedRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
+  '/admin/': typeof AdminIndexRoute
+  '/employer/': typeof EmployerIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
+  '/p03/': typeof P03IndexRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
+  '/api/p02/ai': typeof ApiP02AiRoute
   '/api/p03/review': typeof ApiP03ReviewRoute
+  '/employer/applicants/$id': typeof EmployerApplicantsIdRoute
+  '/employer/edit/$id': typeof EmployerEditIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/applications': typeof ApplicationsRoute
   '/desk': typeof DeskRoute
-  '/employer': typeof EmployerRoute
   '/faculty': typeof FacultyRoute
   '/faq': typeof FaqRoute
   '/matches': typeof MatchesRoute
   '/profile': typeof ProfileRoute
   '/student': typeof StudentRoute
-  '/admin/applications': typeof AdminApplicationsRoute
-  '/admin/shared': typeof AdminSharedRoute
+  '/admin/ai-logs': typeof AdminAiLogsRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
+  '/employer/listings': typeof EmployerListingsRoute
+  '/employer/post': typeof EmployerPostRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/p03/employer': typeof P03EmployerRoute
+  '/p03/shared': typeof P03SharedRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
+  '/admin': typeof AdminIndexRoute
+  '/employer': typeof EmployerIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
+  '/p03': typeof P03IndexRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
+  '/api/p02/ai': typeof ApiP02AiRoute
   '/api/p03/review': typeof ApiP03ReviewRoute
+  '/employer/applicants/$id': typeof EmployerApplicantsIdRoute
+  '/employer/edit/$id': typeof EmployerEditIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/applications': typeof ApplicationsRoute
   '/desk': typeof DeskRoute
-  '/employer': typeof EmployerRoute
   '/faculty': typeof FacultyRoute
   '/faq': typeof FaqRoute
   '/matches': typeof MatchesRoute
   '/profile': typeof ProfileRoute
   '/student': typeof StudentRoute
-  '/admin_/applications': typeof AdminApplicationsRoute
-  '/admin_/shared': typeof AdminSharedRoute
+  '/admin/ai-logs': typeof AdminAiLogsRoute
   '/api/ai-review': typeof ApiAiReviewRoute
   '/api/chat': typeof ApiChatRoute
+  '/employer/listings': typeof EmployerListingsRoute
+  '/employer/post': typeof EmployerPostRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/p03/employer': typeof P03EmployerRoute
+  '/p03/shared': typeof P03SharedRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
+  '/admin/': typeof AdminIndexRoute
+  '/employer/': typeof EmployerIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
+  '/p03/': typeof P03IndexRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
+  '/api/p02/ai': typeof ApiP02AiRoute
   '/api/p03/review': typeof ApiP03ReviewRoute
+  '/employer/applicants/$id': typeof EmployerApplicantsIdRoute
+  '/employer/edit/$id': typeof EmployerEditIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/applications'
     | '/desk'
-    | '/employer'
     | '/faculty'
     | '/faq'
     | '/matches'
     | '/profile'
     | '/student'
-    | '/admin/applications'
-    | '/admin/shared'
+    | '/admin/ai-logs'
     | '/api/ai-review'
     | '/api/chat'
+    | '/employer/listings'
+    | '/employer/post'
     | '/opportunities/$id'
+    | '/p03/employer'
+    | '/p03/shared'
     | '/p05/coordinator'
+    | '/admin/'
+    | '/employer/'
     | '/opportunities/'
+    | '/p03/'
     | '/api/desk/$action'
+    | '/api/p02/ai'
     | '/api/p03/review'
+    | '/employer/applicants/$id'
+    | '/employer/edit/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/applications'
     | '/desk'
-    | '/employer'
     | '/faculty'
     | '/faq'
     | '/matches'
     | '/profile'
     | '/student'
-    | '/admin/applications'
-    | '/admin/shared'
+    | '/admin/ai-logs'
     | '/api/ai-review'
     | '/api/chat'
+    | '/employer/listings'
+    | '/employer/post'
     | '/opportunities/$id'
+    | '/p03/employer'
+    | '/p03/shared'
     | '/p05/coordinator'
+    | '/admin'
+    | '/employer'
     | '/opportunities'
+    | '/p03'
     | '/api/desk/$action'
+    | '/api/p02/ai'
     | '/api/p03/review'
+    | '/employer/applicants/$id'
+    | '/employer/edit/$id'
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/applications'
     | '/desk'
-    | '/employer'
     | '/faculty'
     | '/faq'
     | '/matches'
     | '/profile'
     | '/student'
-    | '/admin_/applications'
-    | '/admin_/shared'
+    | '/admin/ai-logs'
     | '/api/ai-review'
     | '/api/chat'
+    | '/employer/listings'
+    | '/employer/post'
     | '/opportunities/$id'
+    | '/p03/employer'
+    | '/p03/shared'
     | '/p05/coordinator'
+    | '/admin/'
+    | '/employer/'
     | '/opportunities/'
+    | '/p03/'
     | '/api/desk/$action'
+    | '/api/p02/ai'
     | '/api/p03/review'
+    | '/employer/applicants/$id'
+    | '/employer/edit/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
   ApplicationsRoute: typeof ApplicationsRoute
   DeskRoute: typeof DeskRoute
-  EmployerRoute: typeof EmployerRoute
   FacultyRoute: typeof FacultyRoute
   FaqRoute: typeof FaqRoute
   MatchesRoute: typeof MatchesRoute
   ProfileRoute: typeof ProfileRoute
   StudentRoute: typeof StudentRoute
-  AdminApplicationsRoute: typeof AdminApplicationsRoute
-  AdminSharedRoute: typeof AdminSharedRoute
+  AdminAiLogsRoute: typeof AdminAiLogsRoute
   ApiAiReviewRoute: typeof ApiAiReviewRoute
   ApiChatRoute: typeof ApiChatRoute
+  EmployerListingsRoute: typeof EmployerListingsRoute
+  EmployerPostRoute: typeof EmployerPostRoute
   OpportunitiesIdRoute: typeof OpportunitiesIdRoute
+  P03EmployerRoute: typeof P03EmployerRoute
+  P03SharedRoute: typeof P03SharedRoute
   P05CoordinatorRoute: typeof P05CoordinatorRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  EmployerIndexRoute: typeof EmployerIndexRoute
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
+  P03IndexRoute: typeof P03IndexRoute
   ApiDeskActionRoute: typeof ApiDeskActionRoute
+  ApiP02AiRoute: typeof ApiP02AiRoute
   ApiP03ReviewRoute: typeof ApiP03ReviewRoute
+  EmployerApplicantsIdRoute: typeof EmployerApplicantsIdRoute
+  EmployerEditIdRoute: typeof EmployerEditIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -284,13 +375,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/applications': {
@@ -305,13 +389,6 @@ declare module '@tanstack/react-router' {
       path: '/desk'
       fullPath: '/desk'
       preLoaderRoute: typeof DeskRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/employer': {
-      id: '/employer'
-      path: '/employer'
-      fullPath: '/employer'
-      preLoaderRoute: typeof EmployerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faculty': {
@@ -349,18 +426,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/applications': {
-      id: '/admin_/applications'
-      path: '/admin/applications'
-      fullPath: '/admin/applications'
-      preLoaderRoute: typeof AdminApplicationsRouteImport
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/shared': {
-      id: '/admin_/shared'
-      path: '/admin/shared'
-      fullPath: '/admin/shared'
-      preLoaderRoute: typeof AdminSharedRouteImport
+    '/admin/ai-logs': {
+      id: '/admin/ai-logs'
+      path: '/admin/ai-logs'
+      fullPath: '/admin/ai-logs'
+      preLoaderRoute: typeof AdminAiLogsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/ai-review': {
@@ -377,6 +454,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/employer/': {
+      id: '/employer/'
+      path: '/employer'
+      fullPath: '/employer/'
+      preLoaderRoute: typeof EmployerIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employer/listings': {
+      id: '/employer/listings'
+      path: '/employer/listings'
+      fullPath: '/employer/listings'
+      preLoaderRoute: typeof EmployerListingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employer/post': {
+      id: '/employer/post'
+      path: '/employer/post'
+      fullPath: '/employer/post'
+      preLoaderRoute: typeof EmployerPostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/opportunities/': {
       id: '/opportunities/'
       path: '/opportunities'
@@ -389,6 +487,27 @@ declare module '@tanstack/react-router' {
       path: '/opportunities/$id'
       fullPath: '/opportunities/$id'
       preLoaderRoute: typeof OpportunitiesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p03/': {
+      id: '/p03/'
+      path: '/p03'
+      fullPath: '/p03/'
+      preLoaderRoute: typeof P03IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p03/employer': {
+      id: '/p03/employer'
+      path: '/p03/employer'
+      fullPath: '/p03/employer'
+      preLoaderRoute: typeof P03EmployerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p03/shared': {
+      id: '/p03/shared'
+      path: '/p03/shared'
+      fullPath: '/p03/shared'
+      preLoaderRoute: typeof P03SharedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/p05/coordinator': {
@@ -405,6 +524,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDeskActionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/p02/ai': {
+      id: '/api/p02/ai'
+      path: '/api/p02/ai'
+      fullPath: '/api/p02/ai'
+      preLoaderRoute: typeof ApiP02AiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/p03/review': {
       id: '/api/p03/review'
       path: '/api/p03/review'
@@ -412,29 +538,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiP03ReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/employer/applicants/$id': {
+      id: '/employer/applicants/$id'
+      path: '/employer/applicants/$id'
+      fullPath: '/employer/applicants/$id'
+      preLoaderRoute: typeof EmployerApplicantsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/employer/edit/$id': {
+      id: '/employer/edit/$id'
+      path: '/employer/edit/$id'
+      fullPath: '/employer/edit/$id'
+      preLoaderRoute: typeof EmployerEditIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
   ApplicationsRoute: ApplicationsRoute,
   DeskRoute: DeskRoute,
-  EmployerRoute: EmployerRoute,
   FacultyRoute: FacultyRoute,
   FaqRoute: FaqRoute,
   MatchesRoute: MatchesRoute,
   ProfileRoute: ProfileRoute,
   StudentRoute: StudentRoute,
-  AdminApplicationsRoute: AdminApplicationsRoute,
-  AdminSharedRoute: AdminSharedRoute,
+  AdminAiLogsRoute: AdminAiLogsRoute,
   ApiAiReviewRoute: ApiAiReviewRoute,
   ApiChatRoute: ApiChatRoute,
+  EmployerListingsRoute: EmployerListingsRoute,
+  EmployerPostRoute: EmployerPostRoute,
   OpportunitiesIdRoute: OpportunitiesIdRoute,
+  P03EmployerRoute: P03EmployerRoute,
+  P03SharedRoute: P03SharedRoute,
   P05CoordinatorRoute: P05CoordinatorRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  EmployerIndexRoute: EmployerIndexRoute,
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
+  P03IndexRoute: P03IndexRoute,
   ApiDeskActionRoute: ApiDeskActionRoute,
+  ApiP02AiRoute: ApiP02AiRoute,
   ApiP03ReviewRoute: ApiP03ReviewRoute,
+  EmployerApplicantsIdRoute: EmployerApplicantsIdRoute,
+  EmployerEditIdRoute: EmployerEditIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

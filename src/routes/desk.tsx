@@ -55,7 +55,7 @@ function Reply({ r }: { r: AskReply }) {
       {r.case_id && (
         <p className="mt-3 rounded-lg bg-sent/60 px-3 py-2 text-xs text-sent-foreground">
           Case <strong>{r.case_id}</strong> is in the coordinator's queue.{' '}
-          <Link to="/admin" hash="desk-admin" className="font-semibold underline underline-offset-2">Open it as Career Services</Link>
+          <Link to="/p03" hash="desk-admin" className="font-semibold underline underline-offset-2">Open it as Career Services</Link>
         </p>
       )}
       <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border pt-2 text-xs text-muted-foreground">

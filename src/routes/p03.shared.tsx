@@ -22,7 +22,7 @@ import {
 } from "@/lib/p03/shared-review";
 import type { CheckKey } from "@/lib/p03/review";
 
-export const Route = createFileRoute("/admin_/shared")({
+export const Route = createFileRoute("/p03/shared")({
   head: () => ({ meta: [{ title: "Shared review queue · IPP" }] }),
   component: SharedReviewPage,
 });
@@ -100,7 +100,7 @@ function SharedReviewPage() {
           {loading ? "Reading…" : "Refresh"}
         </button>
         <Link
-          to="/admin"
+          to="/p03"
           className={`text-sm font-medium text-primary underline-offset-4 hover:underline ${focus}`}
         >
           Demo queue

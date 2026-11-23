@@ -8,10 +8,10 @@ import {
   ShieldCheck,
   UserRoundPlus,
 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { Chip, focus, KindBadge, Meta, primaryBtn } from "@/components/p02/ui";
-import { loadListings, type Listing } from "@/lib/p02/listings";
+import { Chip, focus, Meta, primaryBtn, TypeBadge } from "@/components/p02/ui";
+import { LISTINGS, type Listing } from "@/lib/p02/data";
+import { companyName } from "@/components/p02/ui";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -52,12 +52,7 @@ const STEPS = [
 ];
 
 function Home() {
-  const [featured, setFeatured] = useState<Listing | null>(null);
-  useEffect(() => {
-    void loadListings().then((s) => {
-      setFeatured(s.listings.find((l) => l.skills.length >= 2) ?? s.listings[0] ?? null);
-    });
-  }, []);
+  const featured: Listing | null = LISTINGS.find((l) => l.id === "da-coop-aldar") ?? null;
 
   return (
     <AppShell wide>
@@ -94,18 +89,18 @@ function Home() {
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Featured placement
                 </p>
-                <KindBadge kind={featured.kind} />
+                <TypeBadge type={featured.type} />
               </div>
               <h2 className="mt-2 text-xl font-bold text-heading">{featured.title}</h2>
               <p className="mt-1">
-                <Meta icon={Building2}>{featured.employer}</Meta>
+                <Meta icon={Building2}>{companyName(featured.companyId)}</Meta>
               </p>
               <div className="mt-2 flex flex-wrap gap-3">
                 <Meta icon={MapPin}>{featured.city}</Meta>
                 <span className="text-sm text-muted-foreground">{featured.duration}</span>
               </div>
               <div className="mt-3 flex flex-wrap gap-1.5">
-                {featured.skills.slice(0, 3).map((s) => (
+                {[...featured.required, ...featured.preferred].slice(0, 3).map((s) => (
                   <Chip key={s}>{s}</Chip>
                 ))}
               </div>

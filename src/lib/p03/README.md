@@ -4,8 +4,8 @@ Sara Ahmed (Careers coordinator, synthetic) checks every employer listing before
 
 | Page | What it does | Data |
 | --- | --- | --- |
-| `/admin` | Demo review queue: five checks, AI reviewer, request changes, decline, version 2, publish, close, decision log, review rules, desk admin | Browser (`review.ts`, beside Team 1's store) |
-| `/admin/shared` | The same review on Team 5's shared database: every team's listings, live | `shared-review.ts` (read), `/api/p03/review` (write) |
+| `/p03` | Demo review queue: five checks, AI reviewer, request changes, decline, version 2, publish, close, decision log, review rules, desk admin | Browser (`review.ts`, beside Team 1's store) |
+| `/p03/shared` | The same review on Team 5's shared database: every team's listings, live | `shared-review.ts` (read), `/api/p03/review` (write) |
 | `/desk` | Internship Desk chat for students and supervisors | `/api/desk/*` (`desk-server.ts`) |
 
 ## Files
