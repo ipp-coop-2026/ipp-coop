@@ -9,7 +9,7 @@
 ![Tests](https://img.shields.io/badge/tests-137%20passing-2f6b3f)
 ![TanStack Start](https://img.shields.io/badge/TanStack%20Start-React%2019-1f3b2c)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
-![Interface](https://img.shields.io/badge/interface-Group%202%20(P02)%20Launchpad-6b4fa0)
+![Interface](https://img.shields.io/badge/interface-Group%202%20%28P02%29%20Launchpad-6b4fa0)
 
 [Live demo](https://ipp-coop-preview.noel-clara.workers.dev) · [Architecture](docs/ARCHITECTURE.md) · [Workflow](docs/WORKFLOW.md) · [Contributing](CONTRIBUTING.md) · [Integration guide](INTEGRATION.md)
 
