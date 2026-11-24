@@ -63,15 +63,63 @@ async function writeDesk(d: Desk) {
   else memory.desk = d;
 }
 
-async function incr(key: string, ttlSeconds: number): Promise<number> {
-  if (shared()) {
-    const n = Number(await redis("INCR", [key]));
-    if (n === 1) await redis("EXPIRE", [key, ttlSeconds]);
-    return n;
-  }
+function incrMemory(key: string): number {
   const n = (memory.counters.get(key) ?? 0) + 1;
   memory.counters.set(key, n);
   return n;
+}
+
+async function incr(key: string, ttlSeconds: number): Promise<number> {
+  if (shared()) {
+    try {
+      const n = Number(await redis("INCR", [key]));
+      if (n === 1) await redis("EXPIRE", [key, ttlSeconds]);
+      if (Number.isFinite(n)) return n;
+    } catch {
+      /* Redis unreachable: count in this server's memory instead of letting calls through. */
+    }
+  }
+  return incrMemory(key);
+}
+
+/** Per-visitor limits, counted per IP address per hour. */
+export const PER_IP_HOURLY = { ai: 20, ask: 30, admin: 30 } as const;
+
+/** The visitor's IP as the host reports it (Cloudflare sets cf-connecting-ip). */
+export function clientIp(request: Request): string {
+  const h = request.headers;
+  const ip =
+    h.get("cf-connecting-ip") ||
+    h.get("x-real-ip") ||
+    (h.get("x-forwarded-for") ?? "").split(",")[0] ||
+    "unknown";
+  return ip.trim().slice(0, 64);
+}
+
+/** True while this IP is under its hourly limit for `kind`; each call counts once. */
+export async function underIpLimit(
+  request: Request,
+  kind: keyof typeof PER_IP_HOURLY,
+): Promise<boolean> {
+  const hour = new Date().toISOString().slice(0, 13);
+  return (
+    (await incr(`${DESK_KEY}:ip:${kind}:${clientIp(request)}:${hour}`, 7200)) <= PER_IP_HOURLY[kind]
+  );
+}
+
+/**
+ * Browsers send Origin on cross-site POSTs. Refuse those so another website cannot spend the
+ * AI budget through a visitor's browser. Requests without Origin (same-site GET, curl) pass and
+ * are held by the per-IP and daily limits instead.
+ */
+export function crossSite(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return false;
+  try {
+    return new URL(origin).host !== new URL(request.url).host;
+  } catch {
+    return true;
+  }
 }
 
 export const deskView = (d: Desk) => ({
@@ -89,25 +137,24 @@ export async function handleAdmin(body: unknown) {
 export type AskResult = { status: number; body: Record<string, unknown> };
 
 /** One AI call against the shared daily cap (the desk and the AI reviewer share it). */
-export async function takeAiQuota(): Promise<boolean> {
-  try {
-    return (
-      (await incr(`${DESK_KEY}:ai:${new Date().toISOString().slice(0, 10)}`, 172800)) <=
-      aiDailyCap()
-    );
-  } catch {
-    return true;
-  }
+export async function takeAiQuota(request?: Request): Promise<boolean> {
+  if (request && !(await underIpLimit(request, "ai"))) return false;
+  return (
+    (await incr(`${DESK_KEY}:ai:${new Date().toISOString().slice(0, 10)}`, 172800)) <= aiDailyCap()
+  );
 }
 
 export const aiKey = () => env("ANTHROPIC_API_KEY");
 export const AI_MODELS = MODELS;
 
-export async function handleAsk(body: {
-  role?: unknown;
-  question?: unknown;
-  session?: unknown;
-}): Promise<AskResult> {
+export async function handleAsk(
+  body: {
+    role?: unknown;
+    question?: unknown;
+    session?: unknown;
+  },
+  request?: Request,
+): Promise<AskResult> {
   const role = body.role === "supervisor" ? "supervisor" : "student";
   const question = String(body.question ?? "")
     .replace(/\s+/g, " ")
@@ -133,15 +180,7 @@ export async function handleAsk(body: {
   const apiKey = env("ANTHROPIC_API_KEY");
   let ai: Awaited<ReturnType<typeof askClaude>> | null = null;
   if (apiKey) {
-    let allowed = true;
-    try {
-      allowed =
-        (await incr(`${DESK_KEY}:ai:${new Date().toISOString().slice(0, 10)}`, 172800)) <=
-        aiDailyCap();
-    } catch {
-      /* counter unavailable: allow */
-    }
-    if (allowed) {
+    if (await takeAiQuota(request)) {
       try {
         ai = await askClaude(role, question, desk.policy, { apiKey, models: MODELS });
       } catch {

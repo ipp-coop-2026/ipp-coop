@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { crossSite } from "@/lib/p03/desk-server";
 import { apply, validate, writeStatus, WriteRefused } from "@/lib/p03/shared-write";
 
 // P03 writes to the shared database (listing_reviews, listings).
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/api/p03/review")({
     handlers: {
       GET: () => json(writeStatus()),
       POST: async ({ request }) => {
+        if (crossSite(request)) return json({ error: "Cross-site requests are not allowed." }, 403);
         const text = await request.text();
         if (text.length > 4000) return json({ error: "Request too large." }, 413);
         try {
