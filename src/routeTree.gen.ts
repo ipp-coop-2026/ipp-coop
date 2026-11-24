@@ -27,11 +27,14 @@ import { Route as EmployerListingsRouteImport } from './routes/employer.listings
 import { Route as EmployerPostRouteImport } from './routes/employer.post'
 import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
+import { Route as P01CoordinatorRouteImport } from './routes/p01.coordinator'
+import { Route as P01ProfileRouteImport } from './routes/p01.profile'
 import { Route as P03IndexRouteImport } from './routes/p03.index'
 import { Route as P03EmployerRouteImport } from './routes/p03.employer'
 import { Route as P03SharedRouteImport } from './routes/p03.shared'
 import { Route as P05CoordinatorRouteImport } from './routes/p05.coordinator'
 import { Route as ApiDeskActionRouteImport } from './routes/api/desk.$action'
+import { Route as ApiP01AssistantRouteImport } from './routes/api/p01.assistant'
 import { Route as ApiP02AiRouteImport } from './routes/api/p02.ai'
 import { Route as ApiP03ReviewRouteImport } from './routes/api/p03.review'
 import { Route as EmployerApplicantsIndexRouteImport } from './routes/employer.applicants.index'
@@ -128,6 +131,16 @@ const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
   path: '/opportunities/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const P01CoordinatorRoute = P01CoordinatorRouteImport.update({
+  id: '/p01/coordinator',
+  path: '/p01/coordinator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const P01ProfileRoute = P01ProfileRouteImport.update({
+  id: '/p01/profile',
+  path: '/p01/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const P03IndexRoute = P03IndexRouteImport.update({
   id: '/p03/',
   path: '/p03/',
@@ -151,6 +164,11 @@ const P05CoordinatorRoute = P05CoordinatorRouteImport.update({
 const ApiDeskActionRoute = ApiDeskActionRouteImport.update({
   id: '/api/desk/$action',
   path: '/api/desk/$action',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiP01AssistantRoute = ApiP01AssistantRouteImport.update({
+  id: '/api/p01/assistant',
+  path: '/api/p01/assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiP02AiRoute = ApiP02AiRouteImport.update({
@@ -195,6 +213,8 @@ export interface FileRoutesByFullPath {
   '/employer/listings': typeof EmployerListingsRoute
   '/employer/post': typeof EmployerPostRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/p01/coordinator': typeof P01CoordinatorRoute
+  '/p01/profile': typeof P01ProfileRoute
   '/p03/employer': typeof P03EmployerRoute
   '/p03/shared': typeof P03SharedRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
@@ -203,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/p03/': typeof P03IndexRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
+  '/api/p01/assistant': typeof ApiP01AssistantRoute
   '/api/p02/ai': typeof ApiP02AiRoute
   '/api/p03/review': typeof ApiP03ReviewRoute
   '/employer/applicants/$id': typeof EmployerApplicantsIdRoute
@@ -225,6 +246,8 @@ export interface FileRoutesByTo {
   '/employer/listings': typeof EmployerListingsRoute
   '/employer/post': typeof EmployerPostRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/p01/coordinator': typeof P01CoordinatorRoute
+  '/p01/profile': typeof P01ProfileRoute
   '/p03/employer': typeof P03EmployerRoute
   '/p03/shared': typeof P03SharedRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
@@ -233,6 +256,7 @@ export interface FileRoutesByTo {
   '/opportunities': typeof OpportunitiesIndexRoute
   '/p03': typeof P03IndexRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
+  '/api/p01/assistant': typeof ApiP01AssistantRoute
   '/api/p02/ai': typeof ApiP02AiRoute
   '/api/p03/review': typeof ApiP03ReviewRoute
   '/employer/applicants/$id': typeof EmployerApplicantsIdRoute
@@ -256,6 +280,8 @@ export interface FileRoutesById {
   '/employer/listings': typeof EmployerListingsRoute
   '/employer/post': typeof EmployerPostRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
+  '/p01/coordinator': typeof P01CoordinatorRoute
+  '/p01/profile': typeof P01ProfileRoute
   '/p03/employer': typeof P03EmployerRoute
   '/p03/shared': typeof P03SharedRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
@@ -264,6 +290,7 @@ export interface FileRoutesById {
   '/opportunities/': typeof OpportunitiesIndexRoute
   '/p03/': typeof P03IndexRoute
   '/api/desk/$action': typeof ApiDeskActionRoute
+  '/api/p01/assistant': typeof ApiP01AssistantRoute
   '/api/p02/ai': typeof ApiP02AiRoute
   '/api/p03/review': typeof ApiP03ReviewRoute
   '/employer/applicants/$id': typeof EmployerApplicantsIdRoute
@@ -288,6 +315,8 @@ export interface FileRouteTypes {
     | '/employer/listings'
     | '/employer/post'
     | '/opportunities/$id'
+    | '/p01/coordinator'
+    | '/p01/profile'
     | '/p03/employer'
     | '/p03/shared'
     | '/p05/coordinator'
@@ -296,6 +325,7 @@ export interface FileRouteTypes {
     | '/opportunities/'
     | '/p03/'
     | '/api/desk/$action'
+    | '/api/p01/assistant'
     | '/api/p02/ai'
     | '/api/p03/review'
     | '/employer/applicants/$id'
@@ -318,6 +348,8 @@ export interface FileRouteTypes {
     | '/employer/listings'
     | '/employer/post'
     | '/opportunities/$id'
+    | '/p01/coordinator'
+    | '/p01/profile'
     | '/p03/employer'
     | '/p03/shared'
     | '/p05/coordinator'
@@ -326,6 +358,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/p03'
     | '/api/desk/$action'
+    | '/api/p01/assistant'
     | '/api/p02/ai'
     | '/api/p03/review'
     | '/employer/applicants/$id'
@@ -348,6 +381,8 @@ export interface FileRouteTypes {
     | '/employer/listings'
     | '/employer/post'
     | '/opportunities/$id'
+    | '/p01/coordinator'
+    | '/p01/profile'
     | '/p03/employer'
     | '/p03/shared'
     | '/p05/coordinator'
@@ -356,6 +391,7 @@ export interface FileRouteTypes {
     | '/opportunities/'
     | '/p03/'
     | '/api/desk/$action'
+    | '/api/p01/assistant'
     | '/api/p02/ai'
     | '/api/p03/review'
     | '/employer/applicants/$id'
@@ -379,6 +415,8 @@ export interface RootRouteChildren {
   EmployerListingsRoute: typeof EmployerListingsRoute
   EmployerPostRoute: typeof EmployerPostRoute
   OpportunitiesIdRoute: typeof OpportunitiesIdRoute
+  P01CoordinatorRoute: typeof P01CoordinatorRoute
+  P01ProfileRoute: typeof P01ProfileRoute
   P03EmployerRoute: typeof P03EmployerRoute
   P03SharedRoute: typeof P03SharedRoute
   P05CoordinatorRoute: typeof P05CoordinatorRoute
@@ -387,6 +425,7 @@ export interface RootRouteChildren {
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
   P03IndexRoute: typeof P03IndexRoute
   ApiDeskActionRoute: typeof ApiDeskActionRoute
+  ApiP01AssistantRoute: typeof ApiP01AssistantRoute
   ApiP02AiRoute: typeof ApiP02AiRoute
   ApiP03ReviewRoute: typeof ApiP03ReviewRoute
   EmployerApplicantsIdRoute: typeof EmployerApplicantsIdRoute
@@ -522,6 +561,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OpportunitiesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/p01/coordinator': {
+      id: '/p01/coordinator'
+      path: '/p01/coordinator'
+      fullPath: '/p01/coordinator'
+      preLoaderRoute: typeof P01CoordinatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p01/profile': {
+      id: '/p01/profile'
+      path: '/p01/profile'
+      fullPath: '/p01/profile'
+      preLoaderRoute: typeof P01ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/p03/': {
       id: '/p03/'
       path: '/p03'
@@ -555,6 +608,13 @@ declare module '@tanstack/react-router' {
       path: '/api/desk/$action'
       fullPath: '/api/desk/$action'
       preLoaderRoute: typeof ApiDeskActionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/p01/assistant': {
+      id: '/api/p01/assistant'
+      path: '/api/p01/assistant'
+      fullPath: '/api/p01/assistant'
+      preLoaderRoute: typeof ApiP01AssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/p02/ai': {
@@ -611,6 +671,8 @@ const rootRouteChildren: RootRouteChildren = {
   EmployerListingsRoute: EmployerListingsRoute,
   EmployerPostRoute: EmployerPostRoute,
   OpportunitiesIdRoute: OpportunitiesIdRoute,
+  P01CoordinatorRoute: P01CoordinatorRoute,
+  P01ProfileRoute: P01ProfileRoute,
   P03EmployerRoute: P03EmployerRoute,
   P03SharedRoute: P03SharedRoute,
   P05CoordinatorRoute: P05CoordinatorRoute,
@@ -619,6 +681,7 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
   P03IndexRoute: P03IndexRoute,
   ApiDeskActionRoute: ApiDeskActionRoute,
+  ApiP01AssistantRoute: ApiP01AssistantRoute,
   ApiP02AiRoute: ApiP02AiRoute,
   ApiP03ReviewRoute: ApiP03ReviewRoute,
   EmployerApplicantsIdRoute: EmployerApplicantsIdRoute,

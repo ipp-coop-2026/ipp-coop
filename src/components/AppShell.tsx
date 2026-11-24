@@ -3,6 +3,7 @@ import { GraduationCap, Menu, RotateCcw, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { resetDemo } from "@/lib/ipp-store";
 import { Assistant } from "@/components/p02/Assistant";
+import { resetP01 } from "@/lib/p01";
 import { commit, resetLaunchpad, useLaunchpad, viewForPath, type View } from "@/lib/p02/store";
 
 /*
@@ -38,6 +39,8 @@ const NAV: Record<View, NavItem[]> = {
 
 // Earlier team pages, kept reachable from the footer without changing Group 2's menus.
 const TEAM_PAGES = [
+  { to: "/p01/profile", label: "Internship interests (Team 1)" },
+  { to: "/p01/coordinator", label: "Profile review (Team 1)" },
   { to: "/faq", label: "Approved FAQ (Team 1)" },
   { to: "/student", label: "Student record (Team 1)" },
   { to: "/faculty", label: "Faculty view (Team 1)" },
@@ -82,6 +85,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
     ) {
       resetDemo();
       resetLaunchpad();
+      resetP01();
     }
   };
 

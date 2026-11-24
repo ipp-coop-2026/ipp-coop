@@ -195,3 +195,24 @@ Added by Team 5 on 23 Nov 2026.
 
 Source for the external module: https://github.com/TheCYPER/bus2010-p05-opportunity-matcher (guide for teams: `docs/SUPABASE_GUIDE.md`).
 
+## 14. Team 1 (P01) in the common repository
+
+Added by Team 1 on 24 Nov 2026 (Sprint 3). Scope: P01, Student profiles and internship interests (project binder and LMS assignment of 27 Oct). Recommendations (P05), applications (P04), evidence review (P06) and listings (P02, P03) stay with their teams.
+
+| Route / file | What it does |
+| --- | --- |
+| `/p01/profile` (footer link, Student view) | Profile and interests: draft, submit, clarification, revision as a new version, skills with evidence status, version history. The profile assistant explains the profile and proposes changes to a draft. |
+| `/p01/coordinator` (footer link, Admin view) | Review queue with changed fields, request clarification, mark reviewed, accept P06 evidence, hand-off export, questions the assistant could not answer. |
+| `/api/p01/assistant` | Assistant server route. `GROQ_API_KEY` optional; rules answers without it. |
+| `src/lib/p01/` | Rules, contract, store and assistant. Import only from `@/lib/p01`. 75 tests in `src/test/p01-*.test.ts`. |
+
+Hand-offs:
+
+| With | Contract | Status |
+| --- | --- | --- |
+| P05 (out) | `toFeedRow()` gives a `profile_feed` row; P05's `mapProfiles()` reads it unchanged | Contract test in `p01-profile.test.ts`. The coordinator page compares P01's copies of COOP-B001 versions 2 and 3 with the class database (14 fields each) |
+| P04 (out) | `currentReviewed()` or `exportVersion()`: the reviewed profile version to attach to an application | Ready; not connected |
+| P06 (in) | `skill_evidence` fields: evidence, student, skill, activity, outcome, reviewer, date | Not connected. E-JIRA-01 and E-PBI-11 are test records; E-SQL-07 and E-PY-02 match the class database |
+| P02 | Launchpad's `/profile` keeps its own short profile for applying | Open: agree whether the apply step reads the P01 version |
+
+Group 2's menus, assistant and pages are unchanged. Shared files changed: `AppShell.tsx` (two footer links, demo reset) and `src/lib/p02/store.ts` (`viewForPath` knows the two P01 pages).

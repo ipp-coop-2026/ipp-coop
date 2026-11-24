@@ -110,10 +110,15 @@ export const seed = (): LaunchpadState => ({
  */
 export function viewForPath(path: string): View | null {
   if (path === "/p03/employer" || path.startsWith("/employer")) return "employer";
-  if (path.startsWith("/admin") || path.startsWith("/p03") || path.startsWith("/p05"))
+  if (
+    path.startsWith("/admin") ||
+    path.startsWith("/p03") ||
+    path.startsWith("/p05") ||
+    path === "/p01/coordinator"
+  )
     return "admin";
   if (
-    ["/profile", "/opportunities", "/applications", "/matches", "/student"].some(
+    ["/profile", "/opportunities", "/applications", "/matches", "/student", "/p01/profile"].some(
       (p) => path === p || path.startsWith(`${p}/`),
     )
   )

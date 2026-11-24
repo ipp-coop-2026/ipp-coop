@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/ipp-coop-2026/ipp-coop/actions/workflows/ci.yml/badge.svg)](https://github.com/ipp-coop-2026/ipp-coop/actions/workflows/ci.yml)
 [![Live demo](https://img.shields.io/badge/live%20demo-online-0f7f81)](https://ipp-coop-preview.noel-clara.workers.dev)
-![Tests](https://img.shields.io/badge/tests-137%20passing-2f6b3f)
+![Tests](https://img.shields.io/badge/tests-212%20passing-2f6b3f)
 ![TanStack Start](https://img.shields.io/badge/TanStack%20Start-React%2019-1f3b2c)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
 ![Interface](https://img.shields.io/badge/interface-Group%202%20%28P02%29%20Launchpad-6b4fa0)
@@ -52,6 +52,7 @@ The common app uses **Group 2's Launchpad** (P02, Employer) as its interface, ag
 
 | Feature | Where | Built by | Human in charge |
 | --- | --- | --- | --- |
+| Profile assistant | `/p01/profile` | Team 1 (P01) | Explains the profile and proposes changes to a draft; the student applies them, a coordinator reviews |
 | IPP Assistant (FAQ chatbot) | Student, floating button | Group 2 (P02) | Answers only from the approved FAQ; "Talk to a human" hands off to the coordinator |
 | Recommended for you | Student → Opportunities | Group 2 (P02) | Suggestions with reasons; placements are approved by a person |
 | Draft with AI, Improve wording, Make shorter, Suggest skills | Employer → Post Opportunity | Group 2 (P02) | The employer edits and submits; the coordinator approves |
@@ -68,7 +69,7 @@ Every AI feature works without a model key (approved FAQ, rules or templates) an
 npx -y bun@1.4.0 install --frozen-lockfile
 npx -y bun@1.4.0 run dev        # http://localhost:8080
 npx -y bun@1.4.0 x tsc --noEmit  # CI runs these three
-npx -y bun@1.4.0 run test        # 137 tests
+npx -y bun@1.4.0 run test        # 212 tests
 npx -y bun@1.4.0 run build
 ```
 
