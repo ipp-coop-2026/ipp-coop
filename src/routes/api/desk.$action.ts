@@ -1,5 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { deskView, handleAdmin, handleAsk, readDesk } from "@/lib/p03/desk-server";
+import {
+  crossSite,
+  deskView,
+  handleAdmin,
+  handleAsk,
+  readDesk,
+  underIpLimit,
+} from "@/lib/p03/desk-server";
 
 // P03 Internship Desk API.
 //   GET  /api/desk/state   policy entries, open and resolved cases, unanswered questions
@@ -24,6 +31,10 @@ export const Route = createFileRoute("/api/desk/$action")({
         }
       },
       POST: async ({ request, params }) => {
+        if (crossSite(request)) return json({ error: "Cross-site requests are not allowed." }, 403);
+        const kind = params.action === "admin" ? "admin" : "ask";
+        if (!(await underIpLimit(request, kind)))
+          return json({ error: "Too many requests from this network. Try again in an hour." }, 429);
         const text = await request.text();
         if (text.length > 8000) return json({ error: "Message too large." }, 413);
         let body: Record<string, unknown>;
@@ -35,7 +46,7 @@ export const Route = createFileRoute("/api/desk/$action")({
         try {
           if (params.action === "admin") return json(await handleAdmin(body));
           if (params.action === "ask") {
-            const r = await handleAsk(body);
+            const r = await handleAsk(body, request);
             return json(r.body, r.status);
           }
           return json({ error: "Not found." }, 404);

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { cleanInput, reviewWithClaude } from "@/lib/p03/ai-review-core";
-import { AI_MODELS, aiKey, takeAiQuota } from "@/lib/p03/desk-server";
+import { AI_MODELS, aiKey, crossSite, takeAiQuota } from "@/lib/p03/desk-server";
 
 // P03 AI reviewer (Sprint 2).
 //   POST /api/ai-review  { submission: {organization,title,description,location,work_mode,duration}, rules: string[] }
@@ -17,6 +17,7 @@ export const Route = createFileRoute("/api/ai-review")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        if (crossSite(request)) return json({ error: "Cross-site requests are not allowed." }, 403);
         const apiKey = aiKey();
         if (!apiKey)
           return json(
@@ -35,9 +36,9 @@ export const Route = createFileRoute("/api/ai-review")({
           return json({ error: "Send a JSON body." }, 400);
         }
         if (!input) return json({ error: "Nothing to review." }, 400);
-        if (!(await takeAiQuota()))
+        if (!(await takeAiQuota(request)))
           return json(
-            { error: "Today's AI limit is used up. The rule-based hints still work." },
+            { error: "The AI limit is used up for now. The rule-based hints still work." },
             429,
           );
         try {

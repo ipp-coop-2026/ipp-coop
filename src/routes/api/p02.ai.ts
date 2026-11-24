@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { cleanRequest, fallback, parseModel, prompts, type AiRequest } from "@/lib/p02/ai-core";
-import { AI_MODELS, aiKey, takeAiQuota } from "@/lib/p03/desk-server";
+import { AI_MODELS, aiKey, crossSite, takeAiQuota } from "@/lib/p03/desk-server";
 
 // Team 2 (Launchpad) AI features.
 //   POST /api/p02/ai  { task, text?, context? }  ->  { text, items?, model, source? }
@@ -50,6 +50,7 @@ export const Route = createFileRoute("/api/p02/ai")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        if (crossSite(request)) return json({ error: "Cross-site requests are not allowed." }, 403);
         const raw = await request.text();
         if (raw.length > 8000) return json({ error: "Request too large." }, 413);
         let r: AiRequest | null = null;
@@ -62,13 +63,13 @@ export const Route = createFileRoute("/api/p02/ai")({
         const key = aiKey();
         let reason = key ? "" : "no key";
         if (key) {
-          if (await takeAiQuota()) {
+          if (await takeAiQuota(request)) {
             try {
               return json(await callClaude(r, key));
             } catch (e) {
               reason = e instanceof Error ? e.message : "model error";
             }
-          } else reason = "daily AI limit reached";
+          } else reason = "AI limit reached";
         }
         // `reason` says why the rules answer was used (shown in the AI review log detail, never secret).
         return json({ ...fallback(r), reason });
