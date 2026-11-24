@@ -12,6 +12,7 @@ import { adminAction, askClaude, decide, emptyDesk, record } from "./desk-core";
 
 export const SESSION_LIMIT = 10;
 const AI_DAILY_CAP_DEFAULT = 150;
+const GROQ_DAILY_CAP_DEFAULT = 150;
 /** Daily AI calls across the desk, the AI reviewer and Launchpad. Override with AI_DAILY_CAP on the host. */
 const aiDailyCap = () => Number(env("AI_DAILY_CAP")) || AI_DAILY_CAP_DEFAULT;
 const DESK_KEY = "ipp-coop:p03:desk";
@@ -83,7 +84,7 @@ async function incr(key: string, ttlSeconds: number): Promise<number> {
 }
 
 /** Per-visitor limits, counted per IP address per hour. */
-export const PER_IP_HOURLY = { ai: 20, ask: 30, admin: 30 } as const;
+export const PER_IP_HOURLY = { ai: 20, groq: 20, ask: 30, admin: 30 } as const;
 
 /** The visitor's IP as the host reports it (Cloudflare sets cf-connecting-ip). */
 export function clientIp(request: Request): string {
@@ -141,6 +142,18 @@ export async function takeAiQuota(request?: Request): Promise<boolean> {
   if (request && !(await underIpLimit(request, "ai"))) return false;
   return (
     (await incr(`${DESK_KEY}:ai:${new Date().toISOString().slice(0, 10)}`, 172800)) <= aiDailyCap()
+  );
+}
+
+/** Daily Groq calls for Team 1's chat and profile assistant. Override with GROQ_DAILY_CAP. */
+const groqDailyCap = () => Number(env("GROQ_DAILY_CAP")) || GROQ_DAILY_CAP_DEFAULT;
+
+/** One Groq call: per-IP hourly limit, then a daily cap kept apart from the Anthropic one. */
+export async function takeGroqQuota(request?: Request): Promise<boolean> {
+  if (request && !(await underIpLimit(request, "groq"))) return false;
+  return (
+    (await incr(`${DESK_KEY}:groq:${new Date().toISOString().slice(0, 10)}`, 172800)) <=
+    groqDailyCap()
   );
 }
 

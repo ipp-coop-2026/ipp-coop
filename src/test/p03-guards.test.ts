@@ -4,6 +4,7 @@ import {
   crossSite,
   PER_IP_HOURLY,
   takeAiQuota,
+  takeGroqQuota,
   underIpLimit,
 } from "@/lib/p03/desk-server";
 
@@ -37,5 +38,13 @@ describe("P03 API guards", () => {
     let allowed = 0;
     for (let i = 0; i < PER_IP_HOURLY.ai + 5; i++) if (await takeAiQuota(c)) allowed++;
     expect(allowed).toBe(PER_IP_HOURLY.ai);
+  });
+
+  it("limits Groq calls per IP on their own counter", async () => {
+    const d = req({ "cf-connecting-ip": "192.0.2.30" });
+    let allowed = 0;
+    for (let i = 0; i < PER_IP_HOURLY.groq + 5; i++) if (await takeGroqQuota(d)) allowed++;
+    expect(allowed).toBe(PER_IP_HOURLY.groq);
+    expect(await takeAiQuota(d)).toBe(true);
   });
 });

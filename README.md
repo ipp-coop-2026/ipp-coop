@@ -79,6 +79,7 @@ Optional server-side settings (never in git; use `.env.local` or the host's secr
 | --- | --- |
 | `ANTHROPIC_API_KEY` | AI answers for Launchpad's AI features, the AI reviewer and the Internship Desk |
 | `AI_DAILY_CAP` | Daily limit on model calls (default 150) |
+| `GROQ_API_KEY`, `GROQ_DAILY_CAP` | Groq answers for Team 1's chat and profile assistant, with their own daily limit (default 150) |
 | `DESK_REDIS_URL` | Desk cases shared across devices (otherwise kept in server memory) |
 | `P03_TEAM_KEY` | Team 3's writes to the shared database, through a server route |
 
