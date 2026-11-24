@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { crossSite, takeGroqQuota } from "@/lib/p03/desk-server";
 import {
   GROQ_BACKUP_MODEL,
   GROQ_MODEL,
@@ -121,9 +122,12 @@ export const Route = createFileRoute("/api/chat")({
       GET: async () =>
         json({ ok: true, ai: Boolean(readKey()), model: readKey() ? GROQ_MODEL : null }),
       POST: async ({ request }) => {
+        if (crossSite(request)) return json({ error: "Cross-site requests are not allowed." }, 403);
+        const raw = await request.text();
+        if (raw.length > 20000) return json({ error: "Request too large." }, 413);
         let body: { messages?: unknown; profile_id?: unknown; data?: unknown };
         try {
-          body = await request.json();
+          body = JSON.parse(raw || "{}");
         } catch {
           return json({ error: "Send a JSON body." }, 400);
         }
@@ -136,7 +140,7 @@ export const Route = createFileRoute("/api/chat")({
         );
         const recs = recommend(profile, buildListings(storeSnapshot(body.data)));
         const key = readKey();
-        if (key) {
+        if (key && (await takeGroqQuota(request))) {
           const reply = await askGroq(key, buildSystemPrompt(profile, recs), messages);
           if (reply) return json(finalizeReply(reply));
         }
