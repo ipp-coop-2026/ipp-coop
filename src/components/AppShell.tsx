@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { resetDemo } from "@/lib/ipp-store";
 import { Assistant } from "@/components/p02/Assistant";
 import { resetP01 } from "@/lib/p01";
+import { resetP04 } from "@/lib/p04";
 import { commit, resetLaunchpad, useLaunchpad, viewForPath, type View } from "@/lib/p02/store";
 
 /*
@@ -46,6 +47,7 @@ const TEAM_PAGES = [
   { to: "/faculty", label: "Faculty view (Team 1)" },
   { to: "/matches", label: "Matches (Team 5)" },
   { to: "/p03", label: "Review and publication (Team 3)" },
+  { to: "/p04", label: "Faculty review (Team 4)" },
 ] as const;
 
 const VIEWS: { id: View; label: string; home: string }[] = [
@@ -86,6 +88,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
       resetDemo();
       resetLaunchpad();
       resetP01();
+      resetP04();
     }
   };
 
@@ -209,7 +212,7 @@ export function AppShell({ children, wide = false }: { children: ReactNode; wide
             <p className="mt-1 text-xs text-muted-foreground">
               Interface and employer side by{" "}
               <span className="font-medium text-heading">Group 2 (P02, Employer)</span>, with parts
-              from Teams 1, 3 and 5.
+              from Teams 1, 3, 4 and 5.
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
               More from the teams:{" "}

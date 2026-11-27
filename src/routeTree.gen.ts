@@ -33,6 +33,12 @@ import { Route as P03IndexRouteImport } from './routes/p03.index'
 import { Route as P03EmployerRouteImport } from './routes/p03.employer'
 import { Route as P03SharedRouteImport } from './routes/p03.shared'
 import { Route as P05CoordinatorRouteImport } from './routes/p05.coordinator'
+import { Route as P04IndexRouteImport } from './routes/p04.index'
+import { Route as P04CalendarRouteImport } from './routes/p04.calendar'
+import { Route as P04EmployerRouteImport } from './routes/p04.employer'
+import { Route as P04StudentRouteImport } from './routes/p04.student'
+import { Route as P04InternshipIdRouteImport } from './routes/p04.internship.$id'
+import { Route as P04ReportIdRouteImport } from './routes/p04.report.$id'
 import { Route as ApiDeskActionRouteImport } from './routes/api/desk.$action'
 import { Route as ApiP01AssistantRouteImport } from './routes/api/p01.assistant'
 import { Route as ApiP02AiRouteImport } from './routes/api/p02.ai'
@@ -161,6 +167,36 @@ const P05CoordinatorRoute = P05CoordinatorRouteImport.update({
   path: '/p05/coordinator',
   getParentRoute: () => rootRouteImport,
 } as any)
+const P04IndexRoute = P04IndexRouteImport.update({
+  id: '/p04/',
+  path: '/p04/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const P04CalendarRoute = P04CalendarRouteImport.update({
+  id: '/p04/calendar',
+  path: '/p04/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const P04EmployerRoute = P04EmployerRouteImport.update({
+  id: '/p04/employer',
+  path: '/p04/employer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const P04StudentRoute = P04StudentRouteImport.update({
+  id: '/p04/student',
+  path: '/p04/student',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const P04InternshipIdRoute = P04InternshipIdRouteImport.update({
+  id: '/p04/internship/$id',
+  path: '/p04/internship/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const P04ReportIdRoute = P04ReportIdRouteImport.update({
+  id: '/p04/report/$id',
+  path: '/p04/report/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDeskActionRoute = ApiDeskActionRouteImport.update({
   id: '/api/desk/$action',
   path: '/api/desk/$action',
@@ -218,6 +254,12 @@ export interface FileRoutesByFullPath {
   '/p03/employer': typeof P03EmployerRoute
   '/p03/shared': typeof P03SharedRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
+  '/p04/': typeof P04IndexRoute
+  '/p04/calendar': typeof P04CalendarRoute
+  '/p04/employer': typeof P04EmployerRoute
+  '/p04/student': typeof P04StudentRoute
+  '/p04/internship/$id': typeof P04InternshipIdRoute
+  '/p04/report/$id': typeof P04ReportIdRoute
   '/admin/': typeof AdminIndexRoute
   '/employer/': typeof EmployerIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
@@ -251,6 +293,12 @@ export interface FileRoutesByTo {
   '/p03/employer': typeof P03EmployerRoute
   '/p03/shared': typeof P03SharedRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
+  '/p04': typeof P04IndexRoute
+  '/p04/calendar': typeof P04CalendarRoute
+  '/p04/employer': typeof P04EmployerRoute
+  '/p04/student': typeof P04StudentRoute
+  '/p04/internship/$id': typeof P04InternshipIdRoute
+  '/p04/report/$id': typeof P04ReportIdRoute
   '/admin': typeof AdminIndexRoute
   '/employer': typeof EmployerIndexRoute
   '/opportunities': typeof OpportunitiesIndexRoute
@@ -285,6 +333,12 @@ export interface FileRoutesById {
   '/p03/employer': typeof P03EmployerRoute
   '/p03/shared': typeof P03SharedRoute
   '/p05/coordinator': typeof P05CoordinatorRoute
+  '/p04/': typeof P04IndexRoute
+  '/p04/calendar': typeof P04CalendarRoute
+  '/p04/employer': typeof P04EmployerRoute
+  '/p04/student': typeof P04StudentRoute
+  '/p04/internship/$id': typeof P04InternshipIdRoute
+  '/p04/report/$id': typeof P04ReportIdRoute
   '/admin/': typeof AdminIndexRoute
   '/employer/': typeof EmployerIndexRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
@@ -320,6 +374,12 @@ export interface FileRouteTypes {
     | '/p03/employer'
     | '/p03/shared'
     | '/p05/coordinator'
+    | '/p04/'
+    | '/p04/calendar'
+    | '/p04/employer'
+    | '/p04/student'
+    | '/p04/internship/$id'
+    | '/p04/report/$id'
     | '/admin/'
     | '/employer/'
     | '/opportunities/'
@@ -353,6 +413,12 @@ export interface FileRouteTypes {
     | '/p03/employer'
     | '/p03/shared'
     | '/p05/coordinator'
+    | '/p04'
+    | '/p04/calendar'
+    | '/p04/employer'
+    | '/p04/student'
+    | '/p04/internship/$id'
+    | '/p04/report/$id'
     | '/admin'
     | '/employer'
     | '/opportunities'
@@ -386,6 +452,12 @@ export interface FileRouteTypes {
     | '/p03/employer'
     | '/p03/shared'
     | '/p05/coordinator'
+    | '/p04/'
+    | '/p04/calendar'
+    | '/p04/employer'
+    | '/p04/student'
+    | '/p04/internship/$id'
+    | '/p04/report/$id'
     | '/admin/'
     | '/employer/'
     | '/opportunities/'
@@ -420,6 +492,12 @@ export interface RootRouteChildren {
   P03EmployerRoute: typeof P03EmployerRoute
   P03SharedRoute: typeof P03SharedRoute
   P05CoordinatorRoute: typeof P05CoordinatorRoute
+  P04IndexRoute: typeof P04IndexRoute
+  P04CalendarRoute: typeof P04CalendarRoute
+  P04EmployerRoute: typeof P04EmployerRoute
+  P04StudentRoute: typeof P04StudentRoute
+  P04InternshipIdRoute: typeof P04InternshipIdRoute
+  P04ReportIdRoute: typeof P04ReportIdRoute
   AdminIndexRoute: typeof AdminIndexRoute
   EmployerIndexRoute: typeof EmployerIndexRoute
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
@@ -603,6 +681,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof P05CoordinatorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/p04/': {
+      id: '/p04/'
+      path: '/p04'
+      fullPath: '/p04/'
+      preLoaderRoute: typeof P04IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p04/calendar': {
+      id: '/p04/calendar'
+      path: '/p04/calendar'
+      fullPath: '/p04/calendar'
+      preLoaderRoute: typeof P04CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p04/employer': {
+      id: '/p04/employer'
+      path: '/p04/employer'
+      fullPath: '/p04/employer'
+      preLoaderRoute: typeof P04EmployerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p04/student': {
+      id: '/p04/student'
+      path: '/p04/student'
+      fullPath: '/p04/student'
+      preLoaderRoute: typeof P04StudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p04/internship/$id': {
+      id: '/p04/internship/$id'
+      path: '/p04/internship/$id'
+      fullPath: '/p04/internship/$id'
+      preLoaderRoute: typeof P04InternshipIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p04/report/$id': {
+      id: '/p04/report/$id'
+      path: '/p04/report/$id'
+      fullPath: '/p04/report/$id'
+      preLoaderRoute: typeof P04ReportIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/desk/$action': {
       id: '/api/desk/$action'
       path: '/api/desk/$action'
@@ -676,6 +796,12 @@ const rootRouteChildren: RootRouteChildren = {
   P03EmployerRoute: P03EmployerRoute,
   P03SharedRoute: P03SharedRoute,
   P05CoordinatorRoute: P05CoordinatorRoute,
+  P04IndexRoute: P04IndexRoute,
+  P04CalendarRoute: P04CalendarRoute,
+  P04EmployerRoute: P04EmployerRoute,
+  P04StudentRoute: P04StudentRoute,
+  P04InternshipIdRoute: P04InternshipIdRoute,
+  P04ReportIdRoute: P04ReportIdRoute,
   AdminIndexRoute: AdminIndexRoute,
   EmployerIndexRoute: EmployerIndexRoute,
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
