@@ -32,6 +32,7 @@ The common app uses **Group 2's Launchpad** (P02, Employer) as its interface, ag
 | 5 | Student | Gets recommendations with reasons, applies, follows the application | Group 2 (P02) · matching data by Team 5 (P05) |
 | 6 | Employer | Reviews every applicant, with AI analysis, interview questions and message drafts | Group 2 (P02) |
 | 7 | Student or supervisor | Asks the Internship Desk during the internship; real problems go to Career Services | Team 3 (P03) |
+| 8 | Faculty advisor | Follows each approved placement: biweekly reports, monthly meetings, supervisor feedback, a final Pass or Fail | Team 4 (P04) |
 
 <table>
 <tr>
@@ -60,6 +61,7 @@ The common app uses **Group 2's Launchpad** (P02, Employer) as its interface, ag
 | AI Review Log | Admin | Group 2 (P02) | Every AI output is logged, with model or fallback |
 | AI reviewer and five-check checklist | Admin → pending listings | Team 3 (P03) | The coordinator decides; the log records ticked checks and whether the AI draft was used |
 | Internship Desk | Student, supervisor | Team 3 (P03) | Problems go to Career Services with urgency and a case number |
+| Internship brief, report summary, meeting prep, early warning | Faculty → `/p04` | Team 4 (P04) | Rules-based helpers; they never change a record and faculty grade |
 
 Every AI feature works without a model key (approved FAQ, rules or templates) and labels its answer "AI-generated" or "Rules-based" on screen. The model is Claude Haiku, called only from the server, with a daily cap.
 
@@ -99,16 +101,18 @@ src/
     index, profile, opportunities.*, applications      student view (Group 2)
     employer.*                                         employer view (Group 2)
     admin.index, admin.ai-logs, admin.desk             admin view (Group 2, with Team 3's checklist and desk queue)
-    p01.*, desk, p03.*, p05.*                          team modules (Team 1, Team 3, Team 5)
+    p01.*, desk, p03.*, p04.*, p05.*                   team modules (Teams 1, 3, 4, 5)
     api/                                               server routes: p01.assistant, p02.ai, ai-review, desk, p03.review, chat
   components/
     AppShell.tsx       header, "View as" switch, footer credits
     p01/               student profile, coordinator review, profile assistant (Team 1)
     p02/               Launchpad components: assistant, listing form, skill picker
+    p04/               faculty dashboard panels, meetings, feedback (Team 4)
   lib/
     p01/               profile rules, hand-off contract p01-profile/1, store (Team 1)
     p02/               Launchpad data, store, matching and AI tasks (Group 2's design)
     p03/               review, AI reviewer, Internship Desk, shared-database writes (Team 3)
+    p04/               faculty review rules, seed from Launchpad's approved applications, store (Team 4)
     p05/, db/          matching engine and read-only shared Supabase client (Team 5)
   test/                vitest suites
 deploy/                Cohesivity entry and runtime shims
@@ -148,6 +152,7 @@ Built by the BUS 2010 (Fall 2026) class teams at MBZUAI.
 | **Team 3 (P03, University review and publication)** | **The shared platform**: GitHub organisation and this repository, CI, protected `main`, CODEOWNERS and team access, architecture and workflow docs; **Launchpad rebuilt in code** from Group 2's live prototype (Base44 cannot export code); the live preview with server-side AI and a daily cap; Group 2's requested changes (Applicants tab, dashboard links, P02 credit). **P03 module**: review checklist, AI reviewer, request changes and versioned resubmits, decision log, Internship Desk, shared-database review queue |
 | **Team 5 (P05)** | Shared Supabase database, read-only client, matching engine, match coordinator page, and the first unified look for the Sprint 3 request (five merged pull requests) |
 | **Team 1 (P01)** | The first common app and the FAQ chatbot; the **student profiles module**: profile versions, coordinator review, evidence hand-off in the shared database's row shape, profile assistant |
+| **Team 4 (P04, Faculty review)** | The **faculty review module**: dashboard, biweekly reports, monthly meetings and calendar, supervisor feedback, Pass/Fail grade, four rules-based helpers (#16) |
 
 ### Contributors
 
@@ -156,6 +161,7 @@ Built by the BUS 2010 (Fall 2026) class teams at MBZUAI.
 | [@11NOel11](https://github.com/11NOel11) | Team 3 (P03) | Maintainer and merge lead: repository, CI and rules, Launchpad rebuild (#8), P03 module (#5), Team 1 and Team 5 parts kept in the app (#11), live preview |
 | [@TheCYPER](https://github.com/TheCYPER) | Team 5 (P05) | Unified look (#2), Team 5 nav link (#3), shared-database client (#4), matching engine and recommendations (#6), match coordinator page (#7) |
 | [@GravityCodez](https://github.com/GravityCodez) | Team 1 (P01) | The Team 1 app snapshot this repository started from; student profiles, coordinator review and evidence hand-off (#12) |
+| [@mdibrahimawad](https://github.com/mdibrahimawad) | Team 4 (P04) | Faculty review module (#16) |
 | Group 2 (P02) | Employer | Designed and built the Launchpad prototype on Base44 that this app's interface follows |
 
 Thanks also to every team's Scrum of Scrums liaison for the cross-team decisions recorded in [docs/decisions.md](docs/decisions.md). Policy answers in the Internship Desk come from the MBZUAI 2025–2026 Industry Internship Guide.
