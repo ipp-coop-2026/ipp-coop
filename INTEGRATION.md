@@ -216,3 +216,24 @@ Hand-offs:
 | P02 | Launchpad's `/profile` keeps its own short profile for applying | Open: agree whether the apply step reads the P01 version |
 
 Group 2's menus, assistant and pages are unchanged. Shared files changed: `AppShell.tsx` (two footer links, demo reset) and `src/lib/p02/store.ts` (`viewForPath` knows the two P01 pages).
+
+## 15. Team 4 (P04) in the common repository
+
+Added by Team 4 on 27 Nov 2026 (Sprint 3). Scope: **Faculty Review**, after the placement is confirmed: biweekly progress reports, monthly faculty meetings with a calendar, supervisor (HR) feedback, the final Pass/Fail grade, and four rules-based AI helpers for faculty (internship brief, report summary, meeting prep, early warning). Team 4 moved from "AI discovery and application tracking" to Faculty Review after meeting the instructor; applications and matching stay with P02 and P05.
+
+| Route / file | What it does |
+| --- | --- |
+| `/p04` (footer link "Faculty review (Team 4)") | Faculty dashboard, internships table, review queue, AI early warning |
+| `/p04/internship/$id`, `/p04/report/$id`, `/p04/calendar` | Internship detail with tabs, report review with AI summary, faculty availability and requests |
+| `/p04/student`, `/p04/employer` | Student "My internship"; Employer HR "Intern feedback" |
+| `src/lib/p04/` | Rules, seed, AI helpers and store (`ipp-p04-faculty-v1`). Import only from `@/lib/p04`. Tests in `src/test/p04-faculty-review.test.ts`. Details in `src/lib/p04/README.md` |
+
+Hand-offs:
+
+| With | Contract | Status |
+| --- | --- | --- |
+| P02 (in) | A Launchpad application with status "Approved" is a confirmed placement; P04 starts the internship that day. Names come from Launchpad's students, listings and companies | Connected (browser) |
+| Shared database | `placements` (P04) as the source of confirmed placements; tables for reports, meetings, grades and supervisor feedback to agree with Team 5 | Open |
+| P07 (out) | The internship record (`PLC-###`, start, end, status) for learning logs | Open: agree with Team 7 at the Scrum of Scrums |
+
+Group 2's menus and pages are unchanged. Shared files changed: `AppShell.tsx` (one footer link, demo reset, footer credit) and `src/routeTree.gen.ts` (the six P04 routes).
