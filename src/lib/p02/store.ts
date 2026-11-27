@@ -109,11 +109,14 @@ export const seed = (): LaunchpadState => ({
  * typed URLs switch the view instead of showing an "… only" notice. Shared pages return null.
  */
 export function viewForPath(path: string): View | null {
-  if (path === "/p03/employer" || path.startsWith("/employer")) return "employer";
+  if (path === "/p03/employer" || path === "/p04/employer" || path.startsWith("/employer"))
+    return "employer";
+  if (path === "/p04/student") return "student";
   if (
     path.startsWith("/admin") ||
     path.startsWith("/p03") ||
     path.startsWith("/p05") ||
+    path.startsWith("/p04") ||
     path === "/p01/coordinator"
   )
     return "admin";

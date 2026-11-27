@@ -178,13 +178,13 @@ export function AiPanel({
           <>
             <p className="mb-2 flex items-center gap-2 text-sm font-medium text-heading">
               <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin text-[oklch(0.48_0.15_300)]" />
-              Thinking <span className="text-muted-foreground tabular-nums">{elapsed.toFixed(1)}s</span>
+              Checking <span className="text-muted-foreground tabular-nums">{elapsed.toFixed(1)}s</span>
             </p>
             <Steps steps={res.steps} upTo={phase.step} />
           </>
         ) : (
           <p className="mb-2 text-xs text-muted-foreground">
-            Thought for {run.current.secs.toFixed(1)}s · {plural(res.steps.length, "step")}
+            Checked in {run.current.secs.toFixed(1)}s · {plural(res.steps.length, "step")}
           </p>
         )}
         <div aria-live="polite">
@@ -193,7 +193,7 @@ export function AiPanel({
           )}
         </div>
         <button type="button" onClick={stop} className={`mt-3 ${quietBtn}`}>
-          Stop generating
+          Stop
         </button>
       </>
     );
@@ -206,7 +206,7 @@ export function AiPanel({
           onClick={() => setOpenSteps((o) => !o)}
           className={`mb-2 inline-flex items-center gap-1 rounded text-xs text-muted-foreground hover:text-foreground ${focus}`}
         >
-          {done.stopped ? "Stopped" : `Thought for ${done.secs.toFixed(1)}s`} · {plural(done.steps.length, "step")}
+          {done.stopped ? "Stopped" : `Checked in ${done.secs.toFixed(1)}s`} · {plural(done.steps.length, "step")}
           <ChevronDown aria-hidden="true" className={`h-3 w-3 transition-transform ${openSteps ? "rotate-180" : ""}`} />
         </button>
         {openSteps && <Steps steps={done.steps} upTo={done.steps.length} />}
